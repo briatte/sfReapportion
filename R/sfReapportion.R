@@ -1,10 +1,10 @@
 #' Reapportion data from one geography to another
 #'
 #' This function allows to reapportion data from one geography to another, for example in the context of working with different administrative units.
-#' @author Joel Gombin
+#' @author Joel Gombin (initial version), François Briatte (port)
 #' @note Inspiration from http://stackoverflow.com/a/17703903 and http://rstudio-pubs-static.s3.amazonaws.com/6577_3b66f8d8f4984fb2807e91224defa854.html. All mistakes are mine, obviously.
-#' @param old_geom a `SpatialPolygonsDataFrame` representing the initial geometry.
-#' @param new_geom a `SpatialPolygonsDataFrame` representing the geometry you want to reapportion data to.
+#' @param old_geom a `SpatialPolygonsDataFrame` or `sf` object representing the initial geometry.
+#' @param new_geom a `SpatialPolygonsDataFrame` or `sf` object representing the geometry you want to reapportion data to.
 #' @param data a `data.frame` containing the data to reapportion, and an ID allowing to match it to the `old_geom`.
 #' @param old_ID a string, the name of the ID variable in the `old_geom`.
 #' @param new_ID a string, the name of the ID variable in the `new_geom`.
@@ -12,7 +12,7 @@
 #' @param variables a character vector, representing the names of the variables in the `data` set to reapportion. By default, all data variables except for the ID.
 #' @param mode \strong{(not yet supported)} either `"count"` or `"proportion"`. `"count"` is for absolute values, `"proportion"` is for, well, proportions (expressed between 0 and 1). If `"proportion"`, you need to provide a weights variable.
 #' @param weights \strong{(not yet supported)} In case the variables are proportions, the name of the variable containing weights (i.e. the total number of observations per unit in the `old_geom`).
-#' @param weight_matrix \strong{(not yet supported)} a SpatialPointsDataFrame indicating where are the observations (inhabitants, voters, etc.) (optional).
+#' @param weight_matrix \strong{(not yet supported)} a `SpatialPointsDataFrame` indicating where are the observations (inhabitants, voters, etc.) (optional).
 #' @param weight_matrix_var \strong{(not yet supported)} the name of the variable in \code{weight_matrix} containing the weights.
 #' @export
 #' @import sp sf purrr
@@ -25,6 +25,13 @@
 #'
 sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID, variables = names(data)[-which(names(data) %in% data_ID)], mode = "count", weights = NULL, weight_matrix = NULL, weight_matrix_var = NULL) {
 
+  if (inherits(old_geom, "sf"))
+    old_geom <- sf::as_Spatial(old_geom)
+  if (inherits(new_geom, "sf"))
+    new_geom <- sf::as_Spatial(new_geom)
+  if (inherits(weight_matrix, "sf"))
+    weight_matrix <- sf::as_Spatial(weight_matrix)
+
   if (!(old_ID %in% names(old_geom@data))) stop(paste(old_ID, "is not a variable from", deparse(substitute(old_geom)),"!", sep=" "))
   if (!(new_ID %in% names(new_geom@data))) stop(paste(new_ID, "is not a variable from", deparse(substitute(new_geom)),"!", sep=" "))
   if (sum(!(variables %in% names(data))) > 0) stop(paste(variables[!(variables %in% names(data))], "is not a variable from", deparse(substitute(data)),"!",sep=" "))
@@ -34,8 +41,6 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID, var
       stop(paste0(weights, " is not a variable from ", deparse(substitute(data)), "!"))
   if (!is.null(weight_matrix) & !inherits(weight_matrix, "SpatialPointsDataFrame", which = FALSE))
     stop("The weight_matrix argument is not a SpatialPointsDataFrame!")
-
-
 
   # if several polygons with the same ID, merge them
   if (length(old_geom@data[,old_ID]) > length(unique(old_geom@data[,old_ID]))) {
@@ -75,7 +80,7 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID, var
   }
 
   ###
-  ### switch to {sf} version of the objects
+  ### switch (or switch back) to {sf} version of the objects
   ###
   new_geom <- sf::st_as_sf(new_geom)
   old_geom <- sf::st_as_sf(old_geom)
