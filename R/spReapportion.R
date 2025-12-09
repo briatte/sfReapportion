@@ -15,9 +15,9 @@
 #' @param weight_matrix a SpatialPointsDataFrame indicating where are the observations (inhabitants, voters, etc.) (optional).
 #' @param weight_matrix_var the name of the variable in \code{weight_matrix} containing the weights.
 #' @export
-#' @import sp maptools rgeos purrr
+#' @import sp sf purrr plyr dplyr
 #'
-spReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID, variables = names(data)[-which(names(data) %in% data_ID)], mode = "count", weights = NULL, weight_matrix = NULL, weight_matrix_var = NULL) {
+sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID, variables = names(data)[-which(names(data) %in% data_ID)], mode = "count", weights = NULL, weight_matrix = NULL, weight_matrix_var = NULL) {
 
   if (!(old_ID %in% names(old_geom@data))) stop(paste(old_ID, "is not a variable from", deparse(substitute(old_geom)),"!", sep=" "))
   if (!(new_ID %in% names(new_geom@data))) stop(paste(new_ID, "is not a variable from", deparse(substitute(new_geom)),"!", sep=" "))
@@ -33,49 +33,74 @@ spReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID, var
 
   # if several polygons with the same ID, merge them
   if (length(old_geom@data[,old_ID]) > length(unique(old_geom@data[,old_ID]))) {
-    df <- old_geom@data[match(unique(old_geom@data[,old_ID]),old_geom@data[,old_ID]),]
-    old_geom <- unionSpatialPolygons(old_geom, old_geom@data[,old_ID])
-    old_geom <- SpatialPolygonsDataFrame(old_geom, df, old_ID)
+    # df <- old_geom@data[match(unique(old_geom@data[,old_ID]),old_geom@data[,old_ID]),]
+    # old_geom <- unionSpatialPolygons(old_geom, old_geom@data[,old_ID])
+    # old_geom <- SpatialPolygonsDataFrame(old_geom, df, old_ID)
+    stop("need to merge polygons in `old_geom` (not yet supported)")
   }
   if (length(new_geom@data[,new_ID]) > length(unique(new_geom@data[,new_ID]))) {
-    df <- new_geom@data[match(unique(new_geom@data[,new_ID]),new_geom@data[,new_ID]),]
-    new_geom <- unionSpatialPolygons(new_geom, new_geom@data[,new_ID])
-    new_geom <- SpatialPolygonsDataFrame(new_geom, df, new_ID)
+    # df <- new_geom@data[match(unique(new_geom@data[,new_ID]),new_geom@data[,new_ID]),]
+    # new_geom <- unionSpatialPolygons(new_geom, new_geom@data[,new_ID])
+    # new_geom <- SpatialPolygonsDataFrame(new_geom, df, new_ID)
+    stop("need to merge polygons in `new_geom` (not yet supported)")
   }
 
   # make sure SPDF IDs are OK
-  old_geom <- spChFIDs(old_geom, as.character(old_geom@data[,old_ID]))
-  new_geom <- spChFIDs(new_geom, as.character(new_geom@data[,new_ID]))
+  old_geom <- sp::spChFIDs(old_geom, as.character(old_geom@data[,old_ID]))
+  new_geom <- sp::spChFIDs(new_geom, as.character(new_geom@data[,new_ID]))
 
   names(data)[names(data) %in% data_ID] <- "old_ID"
 
   # make sure both SPDFs have the same projection
-  if (!identicalCRS(old_geom, new_geom)) {
+  if (!sp::identicalCRS(old_geom, new_geom)) {
     message("Reprojecting new_geom to the same projection as old_geom...")
-    new_geom <- spTransform(new_geom, old_geom@proj4string)
+    new_geom <- sp::spTransform(new_geom, old_geom@proj4string)
   }
-
+  
   # use weight matrix if provided
   if (!is.null(weight_matrix)) {
     if (old_ID %in% names(weight_matrix@data)) {
       weight_matrix@data <- weight_matrix@data[, -match(old_ID, names(weight_matrix@data))]
     }
-    weight_matrix <- weight_matrix[colSums(gWithin(weight_matrix, old_geom, byid = TRUE)) > 0,]
+    weight_matrix <- weight_matrix[colSums(rgeos::gWithin(weight_matrix, old_geom, byid = TRUE)) > 0,]
     weight_matrix_total <- sum(weight_matrix@data[, weight_matrix_var], na.rm = TRUE)
     weight_matrix@data <- cbind(weight_matrix@data, over(weight_matrix, old_geom))
   }
 
+  ###
+  ### switch to {sf} version of the objects
+  ###
+  new_geom <- sf::st_as_sf(new_geom)
+  old_geom <- sf::st_as_sf(old_geom)
 
   # start by trimming out areas that don't intersect
 
-  old_geom_sub <- rgeos::gIntersects(old_geom, new_geom, byid = TRUE) # test for areas that don't intersect
+  ###
+  ### switch to `st_intersects`
+  ###
+  # old_geom_sub <- rgeos::gIntersects(old_geom, new_geom, byid = TRUE) # test for areas that don't intersect
+  old_geom_sub <- sf::st_intersects(old_geom, new_geom) # test for areas that don't intersect
   old_geom_sub2 <- apply(old_geom_sub, 2, function(x) {sum(x)}) # test across all polygons in the SpatialPolygon whether it intersects or not
   old_geom_sub3 <- old_geom[old_geom_sub2 > 0,] # keep only the ones that actually intersect
 
+  ###
+  ### switch to `st_intersection`
+  ###
   # perform the intersection. This takes a while since it also calculates area and other things, which is why we trimmed out irrelevant areas first
-  int <- rgeos::gIntersection(old_geom_sub3, new_geom, byid = TRUE, drop_lower_td = TRUE) # intersect the polygon and your administrative boundaries
+  # int <- rgeos::gIntersection(old_geom_sub3, new_geom, byid = TRUE, drop_lower_td = TRUE) # intersect the polygon and your administrative boundaries
+  int <- sf::st_intersection(old_geom_sub3, new_geom) # intersect the polygon and your administrative boundaries
 
-  intdf <- data.frame(intname = names(int)) # make a data frame for the intersected SpatialPolygon, using names from the output list from int
+  ###
+  ### emulate how `rgeos::gIntersection` handled row names
+  ###
+  rownames(int) <- paste(sf::st_drop_geometry(int)[, old_ID ],
+                         sf::st_drop_geometry(int)[, new_ID ])
+
+  ###
+  ### crucial difference with `rgeos` -- read names from row names, not from `names`
+  ###
+  # intdf <- data.frame(intname = names(int)) # make a data frame for the intersected SpatialPolygon, using names from the output list from int
+  intdf <- data.frame(intname = rownames(int)) # make a data frame for the intersected SpatialPolygon, using names from the output list from int
   intdf$intname <- as.character(intdf$intname) # convert the name to character
   splitid <- strsplit(intdf$intname, " ", fixed=TRUE) # split the names
   splitid <- do.call("rbind", splitid) # rbind those back together
@@ -84,19 +109,27 @@ spReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID, var
   intdf$old_ID <- as.character(intdf$old_ID) # convert to character
   intdf$new_ID <- as.character(intdf$new_ID) # convert to character.
 
-
   # now you have a dataframe corresponding to the intersected SpatialPolygon object
 
   if (!is.null(weight_matrix)) {
-    # check in which intersected polygon each point stands
-    weight_matrix_int <- over(weight_matrix, int)
-    # use points weights to reapportion
-    intdf$polyarea <- map_int(1:length(int), ~ sum(weight_matrix@data[weight_matrix_int %in% .x, weight_matrix_var]))
-    data$departarea <- map_int(old_geom@data[, old_ID], ~ sum(weight_matrix@data[weight_matrix@data[, old_ID] %in% .x, weight_matrix_var]))[match(data[["old_ID"]], old_geom@data[[old_ID]])]
+    stop("use of weight matrix not yet supported")
+    # # check in which intersected polygon each point stands
+    # weight_matrix_int <- sp::over(weight_matrix, int)
+    # # use points weights to reapportion
+    # intdf$polyarea <- purrr::map_int(1:length(int), ~ sum(weight_matrix@data[weight_matrix_int %in% .x, weight_matrix_var]))
+    # data$departarea <- purrr::map_int(old_geom@data[, old_ID], ~ sum(weight_matrix@data[weight_matrix@data[, old_ID] %in% .x, weight_matrix_var]))[match(data[["old_ID"]], old_geom@data[[old_ID]])]
   } else {
+    ###
+    ### switch to `st_area`
+    ###
     # if we don't have weights we just use areas
-    intdf$polyarea <- gArea(int, byid = TRUE) # get area from the polygon SP object and put it in the df
-    data$departarea <- gArea(old_geom, byid = TRUE)[match(data$old_ID, old_geom@data[, old_ID])]
+    # intdf$polyarea <- rgeos::gArea(int, byid = TRUE) # get area from the polygon SP object and put it in the df
+    intdf$polyarea <- sf::st_area(int) # get area from the polygon SP object and put it in the df
+    ###
+    ### switch to `st_area` (again)
+    ###
+    # data$departarea <- rgeos::gArea(old_geom, byid = TRUE)[match(data$old_ID, old_geom@data[, old_ID])]
+    data$departarea <- sf::st_area(old_geom)[match(data$old_ID, dplyr::pull(sf::st_drop_geometry(old_geom[, old_ID])))]
   }
 
   intdf2 <- dplyr::left_join(intdf, data, by = c("old_ID" = "old_ID")) # join together the two dataframes by the administrative ID
@@ -105,16 +138,23 @@ spReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID, var
     intpop <- plyr::ddply(intdf2, "new_ID", function(x) {plyr::numcolwise(sum, na.rm = TRUE)(as.data.frame(x[,paste(variables,"inpoly",sep="")]))}) # sum population lying within each polygon
     names(intpop)[-1] <- variables
   } else {
-    intdf2[,paste(variables,"inpoly",sep="")] <- plyr::numcolwise(function(x) {x * (intdf2$polyarea / intdf2$departarea)})(as.data.frame(intdf2[,variables]) * intdf2[,weights])
-    intdf2$weights <- intdf2[,weights] * (intdf2$polyarea / intdf2$departarea)
-    intpop <- plyr::ddply(intdf2, "new_ID", function(x) {plyr::numcolwise(sum, na.rm = TRUE)(as.data.frame(x[,c(paste(variables,"inpoly",sep=""), "weights")]))}) # sum population lying within each polygon
-    intpop[,paste0(variables, "inpoly")] <- intpop[,paste0(variables, "inpoly")] / intpop$weights
-    names(intpop)[-c(1, length(names(intpop)))] <- variables
-    names(intpop)[length(names(intpop))] <- weights
+    stop("use of weight matrix not yet supported")
+    # intdf2[,paste(variables,"inpoly",sep="")] <- plyr::numcolwise(function(x) {x * (intdf2$polyarea / intdf2$departarea)})(as.data.frame(intdf2[,variables]) * intdf2[,weights])
+    # intdf2$weights <- intdf2[,weights] * (intdf2$polyarea / intdf2$departarea)
+    # intpop <- plyr::ddply(intdf2, "new_ID", function(x) {plyr::numcolwise(sum, na.rm = TRUE)(as.data.frame(x[,c(paste(variables,"inpoly",sep=""), "weights")]))}) # sum population lying within each polygon
+    # intpop[,paste0(variables, "inpoly")] <- intpop[,paste0(variables, "inpoly")] / intpop$weights
+    # names(intpop)[-c(1, length(names(intpop)))] <- variables
+    # names(intpop)[length(names(intpop))] <- weights
   }
 
 
 
   names(intpop)[1] <- new_ID
+  
+  ###
+  ### remove `units` type
+  ###
+  intpop <- dplyr::mutate_if(intpop, is.numeric, as.double)
+
   return(intpop) # done!
 }
