@@ -1,4 +1,4 @@
 library(testthat)
-library(spReapportion)
+library(sfReapportion)
 
-test_check("spReapportion")
+test_check("sfReapportion")

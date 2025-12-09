@@ -4,7 +4,9 @@
 \name{ParisPollingStations2012}
 \alias{ParisPollingStations2012}
 \title{Paris polling stations shapefile, 2012}
-\format{An object of class \code{SpatialPolygonsDataFrame} with 867 rows and 5 columns.}
+\format{
+An object of class \code{SpatialPolygonsDataFrame} with 867 rows and 5 columns.
+}
 \source{
 [Paris city](http://opendata.paris.fr/explore/dataset/zones-de-rattachement-des-bureaux-de-vote-en-2012/?tab=table)
 }
@@ -15,4 +17,3 @@ ParisPollingStations2012
 A shapefile of the polling stations in Paris in 2012.
 }
 \keyword{datasets}
-

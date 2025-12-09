@@ -4,7 +4,9 @@
 \name{ParisIris}
 \alias{ParisIris}
 \title{Paris IRIS shapefile, 2013}
-\format{An object of class \code{SpatialPolygonsDataFrame} with 992 rows and 7 columns.}
+\format{
+An object of class \code{SpatialPolygonsDataFrame} with 992 rows and 7 columns.
+}
 \source{
 [IGN](http://professionnels.ign.fr/contoursiris)
 }
@@ -15,4 +17,3 @@ ParisIris
 A shapefile of the IRIS (French census unit) in Paris.
 }
 \keyword{datasets}
-

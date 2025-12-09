@@ -10,12 +10,18 @@
 #' @param new_ID a string, the name of the ID variable in the `new_geom`.
 #' @param data_ID a string, the name of the ID variable in the `data`.
 #' @param variables a character vector, representing the names of the variables in the `data` set to reapportion. By default, all data variables except for the ID.
-#' @param mode either `"count"` or `"proportion"`. `"count"` is for absolute values, `"proportion"` is for, well, proportions (expressed between 0 and 1). If `"proportion"`, you need to provide a weights variable.
-#' @param weights In case the variables are proportions, the name of the variable containing weights (i.e. the total number of observations per unit in the `old_geom`).
-#' @param weight_matrix a SpatialPointsDataFrame indicating where are the observations (inhabitants, voters, etc.) (optional).
-#' @param weight_matrix_var the name of the variable in \code{weight_matrix} containing the weights.
+#' @param mode \strong{(not yet supported)} either `"count"` or `"proportion"`. `"count"` is for absolute values, `"proportion"` is for, well, proportions (expressed between 0 and 1). If `"proportion"`, you need to provide a weights variable.
+#' @param weights \strong{(not yet supported)} In case the variables are proportions, the name of the variable containing weights (i.e. the total number of observations per unit in the `old_geom`).
+#' @param weight_matrix \strong{(not yet supported)} a SpatialPointsDataFrame indicating where are the observations (inhabitants, voters, etc.) (optional).
+#' @param weight_matrix_var \strong{(not yet supported)} the name of the variable in \code{weight_matrix} containing the weights.
 #' @export
-#' @import sp sf purrr plyr dplyr
+#' @import sp sf purrr
+#' @importFrom dplyr left_join
+#' @importFrom dplyr mutate_if
+#' @importFrom dplyr pull
+#' @importFrom plyr ddply
+#' @importFrom plyr numcolwise
+#' @importFrom purrr map_int
 #'
 sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID, variables = names(data)[-which(names(data) %in% data_ID)], mode = "count", weights = NULL, weight_matrix = NULL, weight_matrix_var = NULL) {
 
@@ -56,15 +62,16 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID, var
     message("Reprojecting new_geom to the same projection as old_geom...")
     new_geom <- sp::spTransform(new_geom, old_geom@proj4string)
   }
-  
+
   # use weight matrix if provided
   if (!is.null(weight_matrix)) {
-    if (old_ID %in% names(weight_matrix@data)) {
-      weight_matrix@data <- weight_matrix@data[, -match(old_ID, names(weight_matrix@data))]
-    }
-    weight_matrix <- weight_matrix[colSums(rgeos::gWithin(weight_matrix, old_geom, byid = TRUE)) > 0,]
-    weight_matrix_total <- sum(weight_matrix@data[, weight_matrix_var], na.rm = TRUE)
-    weight_matrix@data <- cbind(weight_matrix@data, over(weight_matrix, old_geom))
+    stop("use of weight matrix not yet supported")
+    # if (old_ID %in% names(weight_matrix@data)) {
+    #   weight_matrix@data <- weight_matrix@data[, -match(old_ID, names(weight_matrix@data))]
+    # }
+    # weight_matrix <- weight_matrix[colSums(rgeos::gWithin(weight_matrix, old_geom, byid = TRUE)) > 0,]
+    # weight_matrix_total <- sum(weight_matrix@data[, weight_matrix_var], na.rm = TRUE)
+    # weight_matrix@data <- cbind(weight_matrix@data, over(weight_matrix, old_geom))
   }
 
   ###
@@ -88,7 +95,7 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID, var
   ###
   # perform the intersection. This takes a while since it also calculates area and other things, which is why we trimmed out irrelevant areas first
   # int <- rgeos::gIntersection(old_geom_sub3, new_geom, byid = TRUE, drop_lower_td = TRUE) # intersect the polygon and your administrative boundaries
-  int <- sf::st_intersection(old_geom_sub3, new_geom) # intersect the polygon and your administrative boundaries
+  int <- suppressWarnings(sf::st_intersection(old_geom_sub3, new_geom)) # intersect the polygon and your administrative boundaries
 
   ###
   ### emulate how `rgeos::gIntersection` handled row names
@@ -150,7 +157,7 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID, var
 
 
   names(intpop)[1] <- new_ID
-  
+
   ###
   ### remove `units` type
   ###

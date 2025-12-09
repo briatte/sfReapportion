@@ -4,7 +4,9 @@
 \name{RP_2011_CS8_Paris}
 \alias{RP_2011_CS8_Paris}
 \title{Socioprofessionnal making of the population over 18 in Paris}
-\format{An object of class \code{data.frame} with 992 rows and 10 columns.}
+\format{
+An object of class \code{data.frame} with 992 rows and 10 columns.
+}
 \source{
 [INSEE](http://www.insee.fr/fr/themes/detail.asp?reg_id=99&ref_id=infra-population-11)
 }
@@ -15,4 +17,3 @@ RP_2011_CS8_Paris
 A dataset containing the number of inhabitants by socioprofessional category in 2011 in Paris, by IRIS (the French census unit).
 }
 \keyword{datasets}
-

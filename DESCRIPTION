@@ -1,25 +1,26 @@
-Package: spReapportion
+Package: sfReapportion
 Type: Package
-Title: Reapportion Data From one Geography to Another
-Version: 0.1.0.9001
-Author: Joel Gombin
-Maintainer: Joel Gombin <joel.gombin@gmail.com>
-Description: This package provides tools to reapportion data from one geography
-    to another, for example in the context of working with different administrative
-    units.
-License: GPL
+Title: Reapportion Data from one Geography to Another
+Version: 0.1.0
+Authors@R: c(
+  person("François", "Briatte", email = "f.briatte@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-6494-9774")),
+  person("Joël", "Gombin", role = c("aut"), comment = c(ORCID = "0000-0002-9459-4473"))
+  )
+Maintainer: François Briatte <f.briatte@gmail.com>
+Description: A port of the spReapportion package, using Simple Features.
+License: GPL-3
 LazyData: TRUE
+URL: https://github.com/briatte/sfReapportion
+BugReports: https://github.com/briatte/sfReapportion/issues
 Depends:
-    R (>= 2.10)
+    R (>= 3.3.0)
 Imports:
+    sf,
     sp,
-    maptools,
-    rgeos,
     purrr,
     plyr,
     dplyr
 Suggests:
     testthat
-URL: https://github.com/joelgombin/spReapportion
-BugReports: https://github.com/joelgombin/spReapportion/issues
-RoxygenNote: 5.0.1
+RoxygenNote: 7.3.3
+Encoding: UTF-8
