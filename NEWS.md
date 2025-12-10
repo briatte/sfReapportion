@@ -1,9 +1,13 @@
-# version 0.1.1
+# version 0.1.2 (2025-12-10)
+
+- support for merging polygons using `sf` (slow, and __lightly tested__ only)
+
+# version 0.1.1 (2025-12-09)
 
 - additional check on `variables` (numeric only)
-- allowing `sf` objects as inputs
+- allowing `sf` objects as inputs (__untested__)
 - losing dependency to `plyr` (faster code, too)
 
-# version 0.1.0
+# version 0.1.0 (2025-12-09)
 
 - `sfReapportion` seems to work without calling `rgeos` or `maptools`

@@ -1,6 +1,11 @@
 A quick port of Joël Gombin's [`spReapportion`](https://github.com/joelgombin/spReapportion) package, without the dependencies to `maptools`, `plyr` and `rgeos`.
 
-__Very much work in progress:__ merging polygons and using a weight matrix are not yet supported.
+__Very much work in progress:__
+
+- passing `sf` instead of `Spatial` objects is experimental
+- merging polygons with duplicated IDs is experimental (and slow)
+- using weights (`mode = "proportion"`) is not yet supported
+- using a weight matrix is not yet supported either
 
 ## Example
 

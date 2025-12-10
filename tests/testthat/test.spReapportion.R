@@ -10,6 +10,10 @@ test_that("sfReapportion reapportions data correctly", {
   expect_equal_to_reference(CS_ParisPollingStations, "CS_ParisPollingStations.rds")
 })
 
+###
+### this test omits to pass "mode = 'proportion'", which is the only reason
+### why my current code passes it successfully...
+###
 test_that("sfReapportion reapportions data correctly with proportions data", {
   skip_on_cran()
   data(ParisPollingStations2012)
