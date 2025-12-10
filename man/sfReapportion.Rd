@@ -19,9 +19,9 @@ sfReapportion(
 )
 }
 \arguments{
-\item{old_geom}{a `SpatialPolygonsDataFrame` representing the initial geometry.}
+\item{old_geom}{a `SpatialPolygonsDataFrame` or `sf` object representing the initial geometry.}
 
-\item{new_geom}{a `SpatialPolygonsDataFrame` representing the geometry you want to reapportion data to.}
+\item{new_geom}{a `SpatialPolygonsDataFrame` or `sf` object representing the geometry you want to reapportion data to.}
 
 \item{data}{a `data.frame` containing the data to reapportion, and an ID allowing to match it to the `old_geom`.}
 
@@ -37,7 +37,7 @@ sfReapportion(
 
 \item{weights}{\strong{(not yet supported)} In case the variables are proportions, the name of the variable containing weights (i.e. the total number of observations per unit in the `old_geom`).}
 
-\item{weight_matrix}{\strong{(not yet supported)} a SpatialPointsDataFrame indicating where are the observations (inhabitants, voters, etc.) (optional).}
+\item{weight_matrix}{\strong{(not yet supported)} a `SpatialPointsDataFrame` indicating where are the observations (inhabitants, voters, etc.) (optional).}
 
 \item{weight_matrix_var}{\strong{(not yet supported)} the name of the variable in \code{weight_matrix} containing the weights.}
 }
@@ -48,5 +48,5 @@ This function allows to reapportion data from one geography to another, for exam
 Inspiration from http://stackoverflow.com/a/17703903 and http://rstudio-pubs-static.s3.amazonaws.com/6577_3b66f8d8f4984fb2807e91224defa854.html. All mistakes are mine, obviously.
 }
 \author{
-Joel Gombin
+Joel Gombin (initial version), François Briatte (port)
 }

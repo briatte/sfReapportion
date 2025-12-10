@@ -1,7 +1,7 @@
 Package: sfReapportion
 Type: Package
 Title: Reapportion Data from one Geography to Another
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(
   person("François", "Briatte", email = "f.briatte@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-6494-9774")),
   person("Joël", "Gombin", role = c("aut"), comment = c(ORCID = "0000-0002-9459-4473"))
@@ -15,11 +15,10 @@ BugReports: https://github.com/briatte/sfReapportion/issues
 Depends:
     R (>= 3.3.0)
 Imports:
-    sf,
-    sp,
+    dplyr,
     purrr,
-    plyr,
-    dplyr
+    sf,
+    sp
 Suggests:
     testthat
 RoxygenNote: 7.3.3

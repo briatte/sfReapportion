@@ -1,4 +1,6 @@
-A quick port of Joël Gombin's [`spReapportion`](https://github.com/joelgombin/spReapportion) package, without the dependencies to `maptools` and `rgeos`. Very much work in progress.
+A quick port of Joël Gombin's [`spReapportion`](https://github.com/joelgombin/spReapportion) package, without the dependencies to `maptools`, `plyr` and `rgeos`.
+
+__Very much work in progress:__ merging polygons and using a weight matrix are not yet supported.
 
 ## Example
 
@@ -20,7 +22,7 @@ CS_ParisPollingStations <- sfReapportion(ParisIris,
 ```
 ```
 # our results
-> head(CS_ParisPollingStations)[, 1:4])
+> head(CS_ParisPollingStations)[, 1:4]
          ID C11_POP15P C11_POP15P_CS1 C11_POP15P_CS2
 1 750010001   1385.539    0.007534526       88.64129
 2 750010002   1389.989    1.158961646       65.49323
@@ -31,7 +33,7 @@ CS_ParisPollingStations <- sfReapportion(ParisIris,
 ```
 ```
 # compare to Joël's test file
-> head(readRDS("tests/testthat/CS_ParisPollingStations.rds")[, 1:4])
+> head(readRDS("tests/testthat/CS_ParisPollingStations.rds"))[, 1:4]
          ID C11_POP15P C11_POP15P_CS1 C11_POP15P_CS2
 1 750010001   1385.539    0.007534526       88.64129
 2 750010002   1389.989    1.158961646       65.49323
