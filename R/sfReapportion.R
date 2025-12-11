@@ -76,39 +76,32 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID, var
 
   # if several polygons with the same ID, merge them
 
-  ###
-  ### switching to own function here to lose `maptools` dependency
-  ### TODO: test, and find a way to speed up
-  ###
-
   # if (length(old_geom@data[,old_ID]) > length(unique(old_geom@data[,old_ID]))) {
   #   df <- old_geom@data[match(unique(old_geom@data[,old_ID]),old_geom@data[,old_ID]),]
   #   old_geom <- unionSpatialPolygons(old_geom, old_geom@data[,old_ID])
   #   old_geom <- SpatialPolygonsDataFrame(old_geom, df, old_ID)
   # }
-  dupl <- sum(duplicated(old_geom@data[, old_ID]))
-  if (dupl > 0) {
-    message("Merging ", dupl, " polygons with duplicate ids in ",
-            deparse(substitute(old_geom)), "...")
-    old_geom <- sfUnionSpatialPolygons(old_geom, old_ID)
-  }
+  ###
+  ### faster method, using {sf} (thanks to Roger Bivand)
+  ###
+  old_geom <- sfAggregate(old_geom, old_ID)
 
   # if (length(new_geom@data[,new_ID]) > length(unique(new_geom@data[,new_ID]))) {
   #   df <- new_geom@data[match(unique(new_geom@data[,new_ID]),new_geom@data[,new_ID]),]
   #   new_geom <- unionSpatialPolygons(new_geom, new_geom@data[,new_ID])
   #   new_geom <- SpatialPolygonsDataFrame(new_geom, df, new_ID)
   # }
+  ###
+  ### faster method, using {sf} (thanks to Roger Bivand)
+  ###
+  new_geom <- sfAggregate(new_geom, new_ID)
 
-  dupl <- sum(duplicated(new_geom@data[, new_ID]))
-  if (dupl > 0) {
-    message("Merging ", dupl, " polygons with duplicate ids in ",
-            deparse(substitute(new_geom)), "...")
-    new_geom <- sfUnionSpatialPolygons(new_geom, new_ID)
-  }
-
-  # make sure SPDF IDs are OK
-  old_geom <- sp::spChFIDs(old_geom, as.character(old_geom@data[,old_ID]))
-  new_geom <- sp::spChFIDs(new_geom, as.character(new_geom@data[,new_ID]))
+  ###
+  ### now done above after merging polygons with duplicated IDs
+  ###
+  # # make sure SPDF IDs are OK
+  # old_geom <- sp::spChFIDs(old_geom, as.character(old_geom@data[,old_ID]))
+  # new_geom <- sp::spChFIDs(new_geom, as.character(new_geom@data[,new_ID]))
 
   names(data)[names(data) %in% data_ID] <- "old_ID"
 
