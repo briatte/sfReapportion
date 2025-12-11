@@ -1,7 +1,7 @@
 #' Reapportion data from one geography to another
 #'
 #' This function allows to reapportion data from one geography to another, for example in the context of working with different administrative units.
-#' @author Joel Gombin (initial version), François Briatte (port)
+#' @author Joël Gombin (initial \code{sp} version), François Briatte (\code{sf} port)
 #' @note Inspiration from http://stackoverflow.com/a/17703903 and http://rstudio-pubs-static.s3.amazonaws.com/6577_3b66f8d8f4984fb2807e91224defa854.html. All mistakes are mine, obviously.
 #' @param old_geom a `SpatialPolygonsDataFrame` or `sf` object representing the initial geometry.
 #' @param new_geom a `SpatialPolygonsDataFrame` or `sf` object representing the geometry you want to reapportion data to.
@@ -24,7 +24,10 @@
 #' @importFrom dplyr summarise_at
 #' @importFrom purrr map_int
 #'
-sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID, variables = names(data)[-which(names(data) %in% data_ID)], mode = "count", weights = NULL, weight_matrix = NULL, weight_matrix_var = NULL) {
+sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
+                          variables = names(data)[-which(names(data) %in% data_ID)],
+                          mode = "count", weights = NULL,
+                          weight_matrix = NULL, weight_matrix_var = NULL) {
 
 
   # convert sf objects to Spatial format ------------------------------------
@@ -36,15 +39,20 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID, var
     old_geom <- sf::as_Spatial(old_geom)
   if (inherits(new_geom, "sf"))
     new_geom <- sf::as_Spatial(new_geom)
+
   if (inherits(weight_matrix, "sf"))
     weight_matrix <- sf::as_Spatial(weight_matrix)
-
+  if (!is.null(weight_matrix) &
+      !inherits(weight_matrix, "SpatialPointsDataFrame"))
+    stop("`weight_matrix` should be a `SpatialPointsDataFrame` or `sf` object")
 
   # check IDs and variables -------------------------------------------------
 
 
-  if (!(old_ID %in% names(old_geom@data))) stop(paste(old_ID, "is not a variable from", deparse(substitute(old_geom)),"!", sep=" "))
-  if (!(new_ID %in% names(new_geom@data))) stop(paste(new_ID, "is not a variable from", deparse(substitute(new_geom)),"!", sep=" "))
+  if (!(old_ID %in% names(old_geom@data)))
+    stop(paste(old_ID, "is not a variable from", deparse(substitute(old_geom))))
+  if (!(new_ID %in% names(new_geom@data)))
+    stop(paste(new_ID, "is not a variable from", deparse(substitute(new_geom))))
 
   # check variables
   if (sum(!(variables %in% names(data))) > 0)
@@ -63,12 +71,11 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID, var
   # check weights (if requested) --------------------------------------------
 
 
-  if (mode %in% "proportion" & is.null(weights)) stop("When mode = 'proportion', you must provide weights.")
+  if (mode %in% "proportion" & is.null(weights))
+    stop('`weights` required when `mode` = "proportion"')
   if (mode %in% "proportion")
     if (!(weights %in% names(data)))
-      stop(paste0(weights, " is not a variable from ", deparse(substitute(data)), "!"))
-  if (!is.null(weight_matrix) & !inherits(weight_matrix, "SpatialPointsDataFrame", which = FALSE))
-    stop("The weight_matrix argument is not a SpatialPointsDataFrame!")
+      stop(paste(weights, "is not a variable from", deparse(substitute(data))))
 
 
   # check polygons and IDs --------------------------------------------------
