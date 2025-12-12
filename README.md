@@ -1,11 +1,25 @@
-A quick port of Joël Gombin's [`spReapportion`](https://github.com/joelgombin/spReapportion) package, without the dependencies to `maptools`, `plyr` and `rgeos`.
+A quick port of Joël Gombin's 
+[`spReapportion`](https://github.com/joelgombin/spReapportion) package, 
+without the dependencies to the `maptools` and `rgeos` packages, which were 
+both retired in 2023, and with additional support for `sf` objects.
+
+The `sfReapportion` function is intended as a drop-in replacement for Joël's
+`spReapportion` function: it takes exactly the same arguments, and outputs 
+exactly the same kind of results, also as a data frame.
 
 __Very much work in progress:__
 
 - passing `sf` instead of `Spatial` objects is experimental
-- merging polygons with duplicated IDs is experimental (and slow)
+- merging polygons with duplicated IDs is experimental
 - using weights (`mode = "proportion"`) is not yet supported
-- using a weight matrix is not yet supported either
+- using a weights matrix is not yet supported either
+
+## Installation
+
+```r
+install.packages("remotes")
+remotes::install_github("briatte/sfReapportion")
+```
 
 ## Example
 
@@ -47,3 +61,7 @@ CS_ParisPollingStations <- sfReapportion(ParisIris,
 5 750010005   1802.787    1.803202193       68.64467
 6 750010006   1619.144    5.790202710       83.05042
 ```
+
+## See also
+
+`sf::st_interpolate_aw`
