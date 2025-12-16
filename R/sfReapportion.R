@@ -24,8 +24,10 @@
 #' @param weights In case the variables are proportions, the name of the
 #' variable containing weights (i.e. the total number of observations per unit
 #' in the `old_geom`).
-#' @param weight_matrix \strong{(not yet supported)} a `SpatialPointsDataFrame` indicating where are the observations (inhabitants, voters, etc.) (optional).
-#' @param weight_matrix_var \strong{(not yet supported)} the name of the variable in \code{weight_matrix} containing the weights.
+#' @param weight_matrix \strong{(optional, untested)} a `SpatialPointsDataFrame`
+#' indicating where are the observations (inhabitants, voters, etc.).
+#' @param weight_matrix_var \strong{(optional, untested)} the name of the
+#' variable in \code{weight_matrix} containing the weights.
 #' @export
 #' @import sp sf
 #' @importFrom dplyr all_of
@@ -152,16 +154,23 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
   # use weight matrix if provided
   if (!is.null(weight_matrix)) {
     ###
-    ### not yet implemented
+    ### warn about lack of testing
     ###
-    stop("use of weight matrix not yet supported")
+    warning("Use of `weight_matrix` not yet tested (sorry), use carefully.")
 
-    # if (old_ID %in% names(weight_matrix@data)) {
-    #   weight_matrix@data <- weight_matrix@data[, -match(old_ID, names(weight_matrix@data))]
-    # }
+    if (old_ID %in% names(weight_matrix@data)) {
+      weight_matrix@data <- weight_matrix@data[, -match(old_ID, names(weight_matrix@data))]
+    }
+    ###
+    ### switch to sf::st_within
+    ###
     # weight_matrix <- weight_matrix[colSums(rgeos::gWithin(weight_matrix, old_geom, byid = TRUE)) > 0,]
-    # weight_matrix_total <- sum(weight_matrix@data[, weight_matrix_var], na.rm = TRUE)
-    # weight_matrix@data <- cbind(weight_matrix@data, sp::over(weight_matrix, old_geom))
+    weight_matrix <- weight_matrix[colSums(sf::st_within(weight_matrix, old_geom)) > 0,]
+    weight_matrix_total <- sum(weight_matrix@data[, weight_matrix_var], na.rm = TRUE)
+    ###
+    ### note: `sp::over` should be replaceable with `sf::st_intersects`
+    ###
+    weight_matrix@data <- cbind(weight_matrix@data, sp::over(weight_matrix, old_geom))
   }
 
   ###
@@ -215,15 +224,15 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
 
   if (!is.null(weight_matrix)) {
     ###
-    ### not yet implemented
+    ### warn about lack of testing (already done earlier)
     ###
-    stop("use of weight matrix not yet supported")
+    # warning("use of weight matrix not yet tested")
 
     # # check in which intersected polygon each point stands
-    # weight_matrix_int <- sp::over(weight_matrix, int)
-    # # use points weights to reapportion
-    # intdf$polyarea <- purrr::map_int(1:length(int), ~ sum(weight_matrix@data[weight_matrix_int %in% .x, weight_matrix_var]))
-    # data$departarea <- purrr::map_int(old_geom@data[, old_ID], ~ sum(weight_matrix@data[weight_matrix@data[, old_ID] %in% .x, weight_matrix_var]))[match(data[["old_ID"]], old_geom@data[[old_ID]])]
+    weight_matrix_int <- sp::over(weight_matrix, int)
+    # use points weights to reapportion
+    intdf$polyarea <- purrr::map_int(1:length(int), ~ sum(weight_matrix@data[weight_matrix_int %in% .x, weight_matrix_var]))
+    data$departarea <- purrr::map_int(old_geom@data[, old_ID], ~ sum(weight_matrix@data[weight_matrix@data[, old_ID] %in% .x, weight_matrix_var]))[match(data[["old_ID"]], old_geom@data[[old_ID]])]
   } else {
     ###
     ### switch to `st_area`
