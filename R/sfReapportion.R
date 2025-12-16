@@ -135,7 +135,7 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
     # }
     # weight_matrix <- weight_matrix[colSums(rgeos::gWithin(weight_matrix, old_geom, byid = TRUE)) > 0,]
     # weight_matrix_total <- sum(weight_matrix@data[, weight_matrix_var], na.rm = TRUE)
-    # weight_matrix@data <- cbind(weight_matrix@data, over(weight_matrix, old_geom))
+    # weight_matrix@data <- cbind(weight_matrix@data, sp::over(weight_matrix, old_geom))
   }
 
   ###
