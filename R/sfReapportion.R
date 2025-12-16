@@ -37,6 +37,7 @@
 #' @importFrom dplyr select
 #' @importFrom dplyr summarise_at
 #' @importFrom purrr map_int
+#' @importFrom rlang .data
 #'
 sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
                           variables = names(data)[-which(names(data) %in% data_ID)],
@@ -255,7 +256,7 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
     ###
     ### note: {dplyr} code roughly 1.5x faster than older {plyr} code
     ###
-    intpop <- dplyr::mutate_at(intdf2, variables, ~ .x * (polyarea / departarea))
+    intpop <- dplyr::mutate_at(intdf2, variables, ~ .x * (.data$polyarea / .data$departarea))
     # remove `units` type (drastically speeds up the `sum` operation below)
     intpop <- dplyr::mutate_at(intpop, variables, as.double)
     # subset to target variables
@@ -270,10 +271,10 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
     ###
     # subset to target variables (incl. weights)
     intpop <- dplyr::select(intdf2, new_ID, dplyr::all_of(variables),
-                            polyarea, departarea,
+                            .data$polyarea, .data$departarea,
                             weights = dplyr::all_of(weights))
     intpop <- dplyr::mutate_at(intpop, variables,
-                               ~ .x * weights * (polyarea / departarea))
+                               ~ .x * weights * (.data$polyarea / .data$departarea))
     intpop$weights <- intpop$weights * (intpop$polyarea / intpop$departarea)
     # remove `units` type (drastically speeds up the `sum` operation below)
     intpop <- dplyr::mutate_at(intpop, c(variables, "weights"), as.double)

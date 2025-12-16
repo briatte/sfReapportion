@@ -8,6 +8,8 @@
 #' @export
 #' @import sf sp
 #' @importFrom dplyr select
+#' @importFrom rlang .data
+#' @importFrom stats aggregate
 sfAggregate <- function(sp, id) {
 
   # sanity check: `sp` is a SpatialPolygons* object
@@ -20,12 +22,12 @@ sfAggregate <- function(sp, id) {
     message("Merging ", dupl, " SpatialPolygons with duplicate IDs")
 
     sp <- sf::st_as_sf(sp[, id])
-    sp <- sf::aggregate(sp, list(sp[[ id ]]), utils::head, n = 1)
+    sp <- aggregate(sp, list(sp[[ id ]]), utils::head, n = 1)
 
     # sanity check: `sp` contains no duplicated `id` values
     stopifnot(!duplicated(sp[[ id ]]))
 
-    sp <- sf::as_Spatial(dplyr::select(sp, -Group.1))
+    sp <- sf::as_Spatial(dplyr::select(sp, -.data$Group.1))
 
   }
 
