@@ -2,6 +2,9 @@
 
 - much faster code for merging polygons using `sf` (thanks to Roger Bivand)
 - `mode = "proportion"` with `weights` re-implemented (__lightly tested__ only)
+- `weight_matrix` re-implemented (__untested__, will throw a warning)
+- additional tests
+- package passes `R CMD CHECK`
 
 # version 0.1.2 (2025-12-10)
 
