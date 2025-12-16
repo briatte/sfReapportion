@@ -11,8 +11,7 @@ __Very much work in progress:__
 
 - passing `sf` instead of `Spatial` objects is experimental
 - merging polygons with duplicated IDs is experimental
-- using weights (`mode = "proportion"`) is not yet supported
-- using a weights matrix is not yet supported either
+- using a weights matrix is not yet supported
 
 ## Installation
 

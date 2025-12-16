@@ -1,3 +1,8 @@
+# version 0.1.3 (2025-12-16)
+
+- much faster code for merging polygons using `sf` (thanks to Roger Bivand)
+- `mode = "proportion"` with `weights` re-implemented (__lightly tested__ only)
+
 # version 0.1.2 (2025-12-10)
 
 - support for merging polygons using `sf` (slow, and __lightly tested__ only)

@@ -1,13 +1,14 @@
 Package: sfReapportion
 Type: Package
 Title: Reapportion Data from one Geography to Another
-Version: 0.1.2
+Version: 0.1.3
 Authors@R: c(
   person("François", "Briatte", email = "f.briatte@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-6494-9774")),
   person("Joël", "Gombin", role = c("aut"), comment = c(ORCID = "0000-0002-9459-4473"))
   )
 Maintainer: François Briatte <f.briatte@gmail.com>
-Description: A port of the spReapportion package, using Simple Features.
+Description: A port of the spReapportion package, using Simple Features in order
+    to lose the dependencies to the retired 'maptools' and 'rgeos' packages.
 License: GPL-3
 LazyData: TRUE
 URL: https://github.com/briatte/sfReapportion
@@ -17,7 +18,6 @@ Depends:
 Imports:
     dplyr,
     purrr,
-    rlang,
     sf,
     sp
 Suggests:
