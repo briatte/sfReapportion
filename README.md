@@ -9,9 +9,8 @@ The `sfReapportion` function is intended as a drop-in replacement for Joël's `s
 
 __Very much work in progress:__
 
-- passing `sf` instead of `Spatial` objects is experimental
-- merging polygons with duplicated IDs is experimental
-- using a weights matrix is not yet supported
+- use of `weights` with `mode = "proportion"` has only been lightly tested
+- use of `weight_matrix` and ``weight_matrix_var` has not been tested
 
 ## Installation
 
