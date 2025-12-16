@@ -85,6 +85,8 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
 
   if (mode %in% "proportion" & is.null(weights))
     stop('`weights` required when `mode` = "proportion"')
+  if (!mode %in% "proportion" & !is.null(weights))
+    stop('`mode` should be set to "proportion" when `weights` are provided')
   if (mode %in% "proportion")
     if (!(weights %in% names(data)))
       stop(paste(weights, "is not a variable from", deparse(substitute(data))))
@@ -248,29 +250,29 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
     # aggregate by sum (as Joël wrote, other functions might be suitable)
     intpop <- dplyr::group_by(intpop, new_ID)
     intpop <- dplyr::summarise_at(intpop, variables, sum, na.rm = TRUE)
-  } else {
-    ###
-    ### not yet implemented (despite some code having been translated)
-    ###
-    stop("mode = 'proportion' not yet supported")
-    # intdf2[,paste(variables,"inpoly",sep="")] <- dplyr::mutate_all(as.data.frame(intdf2[,variables]),
-    #                                                                ~ .x * (intdf2$polyarea / intdf2$departarea))
-    intpop <- dplyr::mutate_at(intdf2, variables, ~ .x * (intdf2$polyarea / intdf2$departarea))
-    # remove `units` type (drastically speeds up the `sum` operation below)
-    intpop <- dplyr::mutate_at(intpop, variables, as.double)
-    # intdf2$weights <- intdf2[,weights] * (intdf2$polyarea / intdf2$departarea)
-    intpop$weights <- intdf2[,weights] * (intdf2$polyarea / intdf2$departarea)
 
-    # intpop <- plyr::ddply(intdf2, "new_ID", function(x) {plyr::numcolwise(sum, na.rm = TRUE)(as.data.frame(x[,c(paste(variables,"inpoly",sep=""), "weights")]))}) # sum population lying within each polygon
+  } else if (mode %in% "proportion") {
+    ###
+    ### note: {dplyr} code roughly 1.5x faster than older {plyr} code
+    ###
+    # subset to target variables (incl. weights)
+    intpop <- dplyr::select(intdf2, new_ID, dplyr::all_of(variables),
+                            polyarea, departarea,
+                            weights = dplyr::all_of(weights))
+    intpop <- dplyr::mutate_at(intpop, variables,
+                               ~ .x * weights * (polyarea / departarea))
+    intpop$weights <- intpop$weights * (intpop$polyarea / intpop$departarea)
+    # remove `units` type (drastically speeds up the `sum` operation below)
+    intpop <- dplyr::mutate_at(intpop, c(variables, "weights"), as.double)
     # aggregate by sum (as Joël wrote, other functions might be suitable)
     intpop <- dplyr::group_by(intpop, new_ID)
-    intpop <- dplyr::summarise_at(intpop, variables, sum, na.rm = TRUE)
-
-    # intpop[,paste0(variables, "inpoly")] <- intpop[,paste0(variables, "inpoly")] / intpop$weights
+    intpop <- dplyr::summarise_at(intpop, c(variables, "weights"),
+                                  sum, na.rm = TRUE)
     intpop <- dplyr::mutate_at(intpop, variables, ~ .x / weights)
-
-    # names(intpop)[-c(1, length(names(intpop)))] <- variables
     names(intpop)[length(names(intpop))] <- weights
+
+  } else{
+    stop('mode should be "count" or "proportion"')
   }
 
   names(intpop)[1] <- new_ID
