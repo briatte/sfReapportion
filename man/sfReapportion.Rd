@@ -46,9 +46,11 @@ If `"proportion"`, you need to provide a `weights` variable.}
 variable containing weights (i.e. the total number of observations per unit
 in the `old_geom`).}
 
-\item{weight_matrix}{\strong{(not yet supported)} a `SpatialPointsDataFrame` indicating where are the observations (inhabitants, voters, etc.) (optional).}
+\item{weight_matrix}{\strong{(optional, untested)} a `SpatialPointsDataFrame`
+indicating where are the observations (inhabitants, voters, etc.).}
 
-\item{weight_matrix_var}{\strong{(not yet supported)} the name of the variable in \code{weight_matrix} containing the weights.}
+\item{weight_matrix_var}{\strong{(optional, untested)} the name of the
+variable in \code{weight_matrix} containing the weights.}
 }
 \description{
 This function allows to reapportion data from one geography to another, for
