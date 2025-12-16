@@ -1,17 +1,29 @@
 #' Reapportion data from one geography to another
 #'
-#' This function allows to reapportion data from one geography to another, for example in the context of working with different administrative units.
-#' @author Joël Gombin (initial \code{sp} version), François Briatte (\code{sf} port)
-#' @note Inspiration from http://stackoverflow.com/a/17703903 and http://rstudio-pubs-static.s3.amazonaws.com/6577_3b66f8d8f4984fb2807e91224defa854.html. All mistakes are mine, obviously.
-#' @param old_geom a `SpatialPolygonsDataFrame` or `sf` object representing the initial geometry.
-#' @param new_geom a `SpatialPolygonsDataFrame` or `sf` object representing the geometry you want to reapportion data to.
-#' @param data a `data.frame` containing the data to reapportion, and an ID allowing to match it to the `old_geom`.
+#' This function allows to reapportion data from one geography to another, for
+#' example in the context of working with different administrative units.
+#' @author Joël Gombin (initial \code{sp} version),
+#' François Briatte (\code{sf} port)
+#' @note Inspiration from \url{https://stackoverflow.com/a/17703903} and
+#' \url{https://rstudio-pubs-static.s3.amazonaws.com/6577_3b66f8d8f4984fb2807e91224defa854.html}. All mistakes are mine, obviously.
+#' @param old_geom a `SpatialPolygonsDataFrame` or `sf` object
+#' representing the initial geometry.
+#' @param new_geom a `SpatialPolygonsDataFrame` or `sf` object
+#' representing the geometry you want to reapportion data to.
+#' @param data a `data.frame` containing the data to reapportion, and an ID
+#' allowing to match it to the `old_geom`.
 #' @param old_ID a string, the name of the ID variable in the `old_geom`.
 #' @param new_ID a string, the name of the ID variable in the `new_geom`.
 #' @param data_ID a string, the name of the ID variable in the `data`.
-#' @param variables a character vector, representing the names of the variables in the `data` set to reapportion. By default, all data variables except for the ID.
-#' @param mode \strong{(not yet supported)} either `"count"` or `"proportion"`. `"count"` is for absolute values, `"proportion"` is for, well, proportions (expressed between 0 and 1). If `"proportion"`, you need to provide a weights variable.
-#' @param weights \strong{(not yet supported)} In case the variables are proportions, the name of the variable containing weights (i.e. the total number of observations per unit in the `old_geom`).
+#' @param variables a character vector, representing the names of the variables
+#' in the `data` set to reapportion. By default, all data variables except for
+#' the ID.
+#' @param mode either `"count"` or `"proportion"`. `"count"` is for absolute
+#' values, `"proportion"` is for, well, proportions (expressed between 0 and 1).
+#' If `"proportion"`, you need to provide a `weights` variable.
+#' @param weights In case the variables are proportions, the name of the
+#' variable containing weights (i.e. the total number of observations per unit
+#' in the `old_geom`).
 #' @param weight_matrix \strong{(not yet supported)} a `SpatialPointsDataFrame` indicating where are the observations (inhabitants, voters, etc.) (optional).
 #' @param weight_matrix_var \strong{(not yet supported)} the name of the variable in \code{weight_matrix} containing the weights.
 #' @export
