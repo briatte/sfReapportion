@@ -42,6 +42,10 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
                           weight_matrix = NULL, weight_matrix_var = NULL) {
 
 
+  if (!mode %in% c("count", "proportion")) {
+    stop('`mode` should be "count" or "proportion"')
+  }
+
   # convert sf objects to Spatial format ------------------------------------
 
   ###
@@ -271,8 +275,6 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
     intpop <- dplyr::mutate_at(intpop, variables, ~ .x / weights)
     names(intpop)[length(names(intpop))] <- weights
 
-  } else{
-    stop('mode should be "count" or "proportion"')
   }
 
   names(intpop)[1] <- new_ID
