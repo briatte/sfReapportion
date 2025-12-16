@@ -220,7 +220,7 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
     ###
     ### note: {dplyr} code roughly 1.5x faster than older {plyr} code
     ###
-    intpop <- dplyr::mutate_at(intdf2, variables, ~ .x * (intdf2$polyarea / intdf2$departarea))
+    intpop <- dplyr::mutate_at(intdf2, variables, ~ .x * (polyarea / departarea))
     # remove `units` type (drastically speeds up the `sum` operation below)
     intpop <- dplyr::mutate_at(intpop, variables, as.double)
     # subset to target variables
