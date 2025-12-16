@@ -125,9 +125,17 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
   names(data)[names(data) %in% data_ID] <- "old_ID"
 
   # make sure both SPDFs have the same projection
+  ###
+  ### performed with {sf}
+  ###
+  # if (sf::st_crs(old_geom) != sf::st_crs(new_geom)) {
   if (!sp::identicalCRS(old_geom, new_geom)) {
     message("Reprojecting ", deparse(substitute(new_geom)),
             " to the same projection as ", deparse(substitute(old_geom)), "...")
+    ###
+    ### performed with {sf}
+    ###
+    # new_geom <- sf::st_transform(new_geom, crs = sf::st_crs(old_geom))
     new_geom <- sp::spTransform(new_geom, old_geom@proj4string)
   }
 
