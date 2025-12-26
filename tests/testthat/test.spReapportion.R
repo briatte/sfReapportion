@@ -51,7 +51,7 @@ test_that("sfReapportion can merge polygons", {
 })
 
 ###
-### this test did not work in {sfReapportion} due to the omission of
+### this test did not work in {spReapportion} due to the omission of
 ### `mode = "proportion` -- the reference data was re-saved in v0.1.3
 ###
 test_that("sfReapportion reapportions data correctly with proportions data", {
