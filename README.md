@@ -10,7 +10,7 @@ The `sfReapportion` function is intended as a drop-in replacement for Joël's `s
 __Very much work in progress:__
 
 - use of `weights` with `mode = "proportion"` has only been lightly tested
-- use of `weight_matrix` and ``weight_matrix_var` has not been tested
+- use of `weight_matrix` and `weight_matrix_var` has not been tested
 
 ## Installation
 

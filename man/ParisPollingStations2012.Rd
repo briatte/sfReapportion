@@ -8,7 +8,7 @@
 An object of class \code{SpatialPolygonsDataFrame} with 867 rows and 5 columns.
 }
 \source{
-[Paris city](http://opendata.paris.fr/explore/dataset/zones-de-rattachement-des-bureaux-de-vote-en-2012/?tab=table)
+Ville de Paris: \url{https://opendata.paris.fr/explore/dataset/zones-de-rattachement-des-bureaux-de-vote-en-2012/table/}
 }
 \usage{
 ParisPollingStations2012

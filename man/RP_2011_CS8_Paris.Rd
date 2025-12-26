@@ -3,17 +3,30 @@
 \docType{data}
 \name{RP_2011_CS8_Paris}
 \alias{RP_2011_CS8_Paris}
-\title{Socioprofessionnal making of the population over 18 in Paris}
+\title{Socio-professional breakdown of the population aged 15+ in Paris, 2011}
 \format{
 An object of class \code{data.frame} with 992 rows and 10 columns.
 }
 \source{
-[INSEE](http://www.insee.fr/fr/themes/detail.asp?reg_id=99&ref_id=infra-population-11)
+INSEE: \url{https://www.insee.fr/fr/statistiques/2028584}
 }
 \usage{
 RP_2011_CS8_Paris
 }
 \description{
-A dataset containing the number of inhabitants by socioprofessional category in 2011 in Paris, by IRIS (the French census unit).
+A dataset containing the number of inhabitants by socio-professional category in 2011 in Paris, by IRIS (the French census tract).
+}
+\details{
+\itemize{
+\item \code{C11_POP15P}: \emph{nombre de personnes de 15 ans ou plus}
+\item \code{C11_POP15P_CS1}: \emph{Agriculteurs exploitants}
+\item \code{C11_POP15P_CS2}: \emph{Artisans, Commerçants, Chefs d'entreprise}
+\item \code{C11_POP15P_CS3}: \emph{Cadres et Professions intellectuelles supérieures}
+\item \code{C11_POP15P_CS4}: \emph{Professions intermédiaires}
+\item \code{C11_POP15P_CS5}: \emph{Employés}
+\item \code{C11_POP15P_CS6}: \emph{Ouvriers}
+\item \code{C11_POP15P_CS7}: \emph{Retraités}
+\item \code{C11_POP15P_CS8}: \emph{Autres sans activité professionnelle}
+}
 }
 \keyword{datasets}

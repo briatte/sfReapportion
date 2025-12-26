@@ -8,12 +8,12 @@
 An object of class \code{SpatialPolygonsDataFrame} with 992 rows and 7 columns.
 }
 \source{
-[IGN](http://professionnels.ign.fr/contoursiris)
+IGN: \url{https://geoservices.ign.fr/contoursiris}
 }
 \usage{
 ParisIris
 }
 \description{
-A shapefile of the IRIS (French census unit) in Paris.
+A shapefile of the IRIS (French census tract) of Paris in 2013.
 }
 \keyword{datasets}

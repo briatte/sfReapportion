@@ -1,3 +1,7 @@
+# version 0.1.4 (2025-12-26)
+
+- updated documentation
+
 # version 0.1.3 (2025-12-16)
 
 - much faster code for merging polygons using `sf` (thanks to Roger Bivand)
