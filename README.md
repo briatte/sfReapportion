@@ -106,6 +106,8 @@ areal_equiv <- areal::aw_interpolate(ParisPollingStations2012_sf, tid = ID,
 - [r-spatial/sf#2563][issue2563] for a technical discussion on merging polygons
 - [`st_interpolate_aw`][st_interpolate] in the [`sf`][sf] package
 
+I also wrote a [very short blog post](https://f.briatte.org/r/sfReapportion) to illustrate what the package does.
+
 [batsaris]: https://cran.r-project.org/web/packages/populR/vignettes/areal-interpolation-comparison.html
 [issue2563]: https://github.com/r-spatial/sf/issues/2563
 [populR]: https://cran.r-project.org/package=populR
