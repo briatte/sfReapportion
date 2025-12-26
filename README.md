@@ -12,6 +12,8 @@ __Very much work in progress:__
 - use of `weights` with `mode = "proportion"` has only been lightly tested
 - use of `weight_matrix` and `weight_matrix_var` has not been tested
 
+The package was ported in order to be used in [this project](https://github.com/briatte/selection-bv).
+
 ## Installation
 
 ```r
@@ -29,7 +31,6 @@ data(ParisPollingStations2012)
 data(ParisIris)
 data(RP_2011_CS8_Paris)
 
-# N.B. weight matrix not yet supported
 CS_ParisPollingStations <- sfReapportion(ParisIris, 
                                          ParisPollingStations2012, 
                                          RP_2011_CS8_Paris, 
