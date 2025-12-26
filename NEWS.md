@@ -1,6 +1,7 @@
 # version 0.1.4 (2025-12-26)
 
 - updated documentation
+- provide code to match results with those of the `areal` package
 
 # version 0.1.3 (2025-12-16)
 
