@@ -1,7 +1,7 @@
 Package: sfReapportion
 Type: Package
 Title: Reapportion Data from one Geography to Another
-Version: 0.1.4
+Version: 0.1.5
 Authors@R: c(
   person("François", "Briatte", email = "f.briatte@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-6494-9774")),
   person("Joël", "Gombin", role = c("aut"), comment = c(ORCID = "0000-0002-9459-4473"))

@@ -1,3 +1,7 @@
+# version 0.1.5 (2025-12-29)
+
+- warn in case of invalid geometries in `sf` objects (see #2)
+
 # version 0.1.4 (2025-12-26)
 
 - updated documentation
