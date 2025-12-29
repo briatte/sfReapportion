@@ -49,6 +49,10 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
     stop('`mode` should be "count" or "proportion"')
   }
 
+  old_geom_name <- deparse(substitute(old_geom))
+  new_geom_name <- deparse(substitute(new_geom))
+  data_name <- deparse(substitute(data))
+
   # convert sf objects to Spatial format ------------------------------------
 
   ###
@@ -83,6 +87,7 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
               " might cause errors\nRepair first with ",
               "sf::st_make_valid(", new_geom_name, ")")
     new_geom <- sf::as_Spatial(new_geom)
+  }
 
   if (inherits(weight_matrix, "sf"))
     weight_matrix <- sf::as_Spatial(weight_matrix)
@@ -94,13 +99,14 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
 
 
   if (!(old_ID %in% names(old_geom@data)))
-    stop(paste(old_ID, "is not a variable from", deparse(substitute(old_geom))))
+    stop(paste(old_ID, "is not a variable from", old_geom_name))
   if (!(new_ID %in% names(new_geom@data)))
-    stop(paste(new_ID, "is not a variable from", deparse(substitute(new_geom))))
+    stop(paste(new_ID, "is not a variable from", new_geom_name))
 
   # check variables
   if (sum(!(variables %in% names(data))) > 0)
-    stop(paste(variables[!(variables %in% names(data))], "is not a variable from", deparse(substitute(data)),"!",sep=" "))
+    stop(paste(variables[ !(variables %in% names(data)) ],
+               "is not a variable from", data_name))
 
   ###
   ### exclude non-numeric variables from reapportionment
@@ -121,7 +127,7 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
     stop('`mode` should be set to "proportion" when `weights` are provided')
   if (mode %in% "proportion")
     if (!(weights %in% names(data)))
-      stop(paste(weights, "is not a variable from", deparse(substitute(data))))
+      stop(paste(weights, "is not a variable from", data_name))
 
 
   # check polygons and IDs --------------------------------------------------
@@ -164,8 +170,8 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
   ###
   # if (sf::st_crs(old_geom) != sf::st_crs(new_geom)) {
   if (!sp::identicalCRS(old_geom, new_geom)) {
-    message("Reprojecting ", deparse(substitute(new_geom)),
-            " to the same projection as ", deparse(substitute(old_geom)), "...")
+    message("Reprojecting ", new_geom_name, " to the same projection as ",
+            old_geom_name, "...")
     ###
     ### performed with {sf}
     ###
@@ -185,13 +191,13 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
     warning("Use of `weight_matrix` not yet tested (sorry), use carefully.")
 
     if (old_ID %in% names(weight_matrix@data)) {
-      weight_matrix@data <- weight_matrix@data[, -match(old_ID, names(weight_matrix@data))]
+      weight_matrix@data <- weight_matrix@data[, -match(old_ID, names(weight_matrix@data)) ]
     }
     ###
     ### switch to sf::st_within
     ###
     # weight_matrix <- weight_matrix[colSums(rgeos::gWithin(weight_matrix, old_geom, byid = TRUE)) > 0,]
-    weight_matrix <- weight_matrix[colSums(sf::st_within(weight_matrix, old_geom)) > 0,]
+    weight_matrix <- weight_matrix[ colSums(sf::st_within(weight_matrix, old_geom)) > 0, ]
     weight_matrix_total <- sum(weight_matrix@data[, weight_matrix_var], na.rm = TRUE)
     ###
     ### note: `sp::over` should be replaceable with `sf::st_intersects`
@@ -216,8 +222,8 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
   ###
   # old_geom_sub <- rgeos::gIntersects(old_geom, new_geom, byid = TRUE) # test for areas that don't intersect
   old_geom_sub <- sf::st_intersects(old_geom, new_geom) # test for areas that don't intersect
-  old_geom_sub2 <- apply(old_geom_sub, 2, function(x) {sum(x)}) # test across all polygons in the SpatialPolygon whether it intersects or not
-  old_geom_sub3 <- old_geom[old_geom_sub2 > 0,] # keep only the ones that actually intersect
+  old_geom_sub2 <- apply(old_geom_sub, 2, sum) # test across all polygons in the SpatialPolygon whether it intersects or not
+  old_geom_sub3 <- old_geom[ old_geom_sub2 > 0, ] # keep only the ones that actually intersect
 
   ###
   ### switch to `st_intersection`
@@ -239,7 +245,7 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
   # intdf <- data.frame(intname = names(int)) # make a data frame for the intersected SpatialPolygon, using names from the output list from int
   intdf <- data.frame(intname = rownames(int)) # make a data frame for the intersected SpatialPolygon, using names from the output list from int
   intdf$intname <- as.character(intdf$intname) # convert the name to character
-  splitid <- strsplit(intdf$intname, " ", fixed=TRUE) # split the names
+  splitid <- strsplit(intdf$intname, " ", fixed = TRUE) # split the names
   splitid <- do.call("rbind", splitid) # rbind those back together
   colnames(splitid) <- c("old_ID", "new_ID") # now you have the administrative area ID and the polygonID as separate variables in a dataframe that correspond to the int SpatialPolygon.
   intdf <- data.frame(intdf, splitid) # make that into a dataframe
@@ -257,8 +263,8 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
     # # check in which intersected polygon each point stands
     weight_matrix_int <- sp::over(weight_matrix, int)
     # use points weights to reapportion
-    intdf$polyarea <- purrr::map_int(1:length(int), ~ sum(weight_matrix@data[weight_matrix_int %in% .x, weight_matrix_var]))
-    data$departarea <- purrr::map_int(old_geom@data[, old_ID], ~ sum(weight_matrix@data[weight_matrix@data[, old_ID] %in% .x, weight_matrix_var]))[match(data[["old_ID"]], old_geom@data[[old_ID]])]
+    intdf$polyarea <- purrr::map_int(1:length(int), ~ sum(weight_matrix@data[ weight_matrix_int %in% .x, weight_matrix_var ]))
+    data$departarea <- purrr::map_int(old_geom@data[, old_ID], ~ sum(weight_matrix@data[ weight_matrix@data[, old_ID ] %in% .x, weight_matrix_var ]))[ match(data[[ "old_ID" ]], old_geom@data[[ old_ID ]]) ]
   } else {
     ###
     ### switch to `st_area`
@@ -270,7 +276,7 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
     ### switch to `st_area` (again)
     ###
     # data$departarea <- rgeos::gArea(old_geom, byid = TRUE)[match(data$old_ID, old_geom@data[, old_ID])]
-    data$departarea <- sf::st_area(old_geom)[ match(data$old_ID, old_geom[[ old_ID]]) ]
+    data$departarea <- sf::st_area(old_geom)[ match(data$old_ID, old_geom[[ old_ID ]]) ]
   }
 
   ###
