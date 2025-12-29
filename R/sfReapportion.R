@@ -54,9 +54,34 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
   ###
   ### untested, but should work, right?
   ###
-  if (inherits(old_geom, "sf"))
+  if (inherits(old_geom, "sf")) {
+    # if (is.na(sf::st_crs(old_geom)))
+    #   warning("Missing CRS found in ", old_geom_name,
+    #           " might cause errors\nRepair first by assigning one with ",
+    #           "sf::st_set_crs(", old_geom_name, ", ...)")
+    # if (!sf::st_is_longlat(old_geom))
+    #   warning("Non-planar CRS found in ", old_geom_name,
+    #           " might cause errors\nRepair first by reprojecting it with ",
+    #           "sf::st_transform(", old_geom_name, ", ...)")
+    if (any(!sf::st_is_valid(old_geom)))
+      warning("Invalid geometries found in ", old_geom_name,
+              " might cause errors\nRepair first with ",
+              "sf::st_make_valid(", old_geom_name, ")")
     old_geom <- sf::as_Spatial(old_geom)
-  if (inherits(new_geom, "sf"))
+  }
+  if (inherits(new_geom, "sf")) {
+    # if (is.na(sf::st_crs(new_geom)))
+    #   warning("Missing CRS found in ", new_geom_name,
+    #           " might cause errors\nRepair first by assigning one with ",
+    #           "sf::st_set_crs(", new_geom_name, ", ...)")
+    # if (!sf::st_is_longlat(new_geom))
+    #   warning("Non-planar CRS found in ", new_geom_name,
+    #           " might cause errors\nRepair first by reprojecting it with ",
+    #           "sf::st_transform(", new_geom_name, ", ...)")
+    if (any(!sf::st_is_valid(new_geom)))
+      warning("Invalid geometries found in ", new_geom_name,
+              " might cause errors\nRepair first with ",
+              "sf::st_make_valid(", new_geom_name, ")")
     new_geom <- sf::as_Spatial(new_geom)
 
   if (inherits(weight_matrix, "sf"))
