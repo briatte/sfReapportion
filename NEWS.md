@@ -1,3 +1,7 @@
+# version 0.1.6 (2026-01-20)
+
+- require a recent version of `sp` to avoid any calls to `rgdal` or `rgeos` (#3)
+
 # version 0.1.5 (2025-12-29)
 
 - warn in case of invalid geometries in `sf` objects (see #2)
