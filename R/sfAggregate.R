@@ -8,7 +8,6 @@
 #' @export
 #' @import sf sp
 #' @importFrom dplyr select
-#' @importFrom rlang .data
 #' @importFrom stats aggregate
 sfAggregate <- function(sp, id) {
 
@@ -27,7 +26,9 @@ sfAggregate <- function(sp, id) {
     # sanity check: `sp` contains no duplicated `id` values
     stopifnot(!duplicated(sp[[ id ]]))
 
-    sp <- sf::as_Spatial(dplyr::select(sp, -.data$Group.1))
+    ## changed for {tidyselect} 1.2.0
+    # sp <- sf::as_Spatial(dplyr::select(sp, -.data$Group.1))
+    sp <- sf::as_Spatial(dplyr::select(sp, -"Group.1"))
 
   }
 

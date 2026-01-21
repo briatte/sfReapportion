@@ -18,10 +18,10 @@ Depends:
 Imports:
     dplyr,
     purrr,
-    rlang,
     sf,
     sp (>= 2.0-0)
 Suggests:
+    areal,
     testthat
 RoxygenNote: 7.3.3
 Encoding: UTF-8

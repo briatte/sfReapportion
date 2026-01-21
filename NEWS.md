@@ -1,3 +1,8 @@
+# version 0.1.7 (2026-01-21)
+
+- losing dependency to `rlang` (removed `.data` pronoun from tidy-selections)
+- added two data equality tests against the `areal` package
+
 # version 0.1.6 (2026-01-20)
 
 - require a recent version of `sp` to avoid any calls to `rgdal` or `rgeos` (#3)

@@ -37,7 +37,6 @@
 #' @importFrom dplyr select
 #' @importFrom dplyr summarise_at
 #' @importFrom purrr map_int
-#' @importFrom rlang .data
 #'
 sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
                           variables = names(data)[-which(names(data) %in% data_ID)],
@@ -163,6 +162,7 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
   # new_geom <- sp::spChFIDs(new_geom, as.character(new_geom@data[,new_ID]))
 
   names(data)[names(data) %in% data_ID] <- "old_ID"
+  data$old_ID <- as.character(data$old_ID) # for compatibility with intdf later
 
   # make sure both SPDFs have the same projection
   ###
@@ -282,12 +282,22 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
   ###
   ### note: `left_join` is much faster than `base::merge`
   ###
-  intdf2 <- dplyr::left_join(intdf, data, by = c("old_ID" = "old_ID")) # join together the two dataframes by the administrative ID
+  # join together the two dataframes by the administrative ID
+  intdf2 <- dplyr::left_join(intdf, data, by = c("old_ID" = "old_ID"))
   if (mode %in% "count") {
     ###
     ### note: {dplyr} code roughly 1.5x faster than older {plyr} code
     ###
-    intpop <- dplyr::mutate_at(intdf2, variables, ~ .x * (.data$polyarea / .data$departarea))
+    ## changed for {tidyselect} 1.2.0
+    # intpop <- dplyr::mutate_at(intdf2, variables, ~ .x * (.data$polyarea /
+    #                                                         .data$departarea))
+    # intpop <- dplyr::mutate_at(intdf2, variables,
+    #                            ~ .x * (dplyr::all_of(polyarea) /
+    #                                      dplyr::all_of(departarea)))
+    ## new variable creation forced to avoid using `all_of`
+    intdf2$weights <- (intdf2$polyarea / intdf2$departarea)
+    ## next line replaces the `mutate_at` line commented out above
+    intpop <- dplyr::mutate_at(intdf2, variables, ~ .x * weights)
     # remove `units` type (drastically speeds up the `sum` operation below)
     intpop <- dplyr::mutate_at(intpop, variables, as.double)
     # subset to target variables
@@ -301,12 +311,23 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
     ### note: {dplyr} code roughly 1.5x faster than older {plyr} code
     ###
     # subset to target variables (incl. weights)
+    ## changed for {tidyselect} 1.2.0
+    # intpop <- dplyr::select(intdf2, new_ID, dplyr::all_of(variables),
+    #                         .data$polyarea, .data$departarea,
+    #                         weights = dplyr::all_of(weights))
     intpop <- dplyr::select(intdf2, new_ID, dplyr::all_of(variables),
-                            .data$polyarea, .data$departarea,
+                            dplyr::all_of("polyarea"),
+                            dplyr::all_of("departarea"),
                             weights = dplyr::all_of(weights))
-    intpop <- dplyr::mutate_at(intpop, variables,
-                               ~ .x * weights * (.data$polyarea / .data$departarea))
+    ## changed for {tidyselect} 1.2.0
+    # intpop <- dplyr::mutate_at(intpop, variables,
+    #                            ~ .x * weights * (.data$polyarea /
+    #                                                .data$departarea))
+    ## before {tidyselect} 1.2.0, the code started with `mutate_at` and then
+    ## continued with the line below -- the new code works the other way round
     intpop$weights <- intpop$weights * (intpop$polyarea / intpop$departarea)
+    ## next line replaces the `mutate_at` line commented out above
+    intpop <- dplyr::mutate_at(intpop, variables, ~ .x * weights)
     # remove `units` type (drastically speeds up the `sum` operation below)
     intpop <- dplyr::mutate_at(intpop, c(variables, "weights"), as.double)
     # aggregate by sum (as Joël wrote, other functions might be suitable)
