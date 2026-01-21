@@ -177,4 +177,42 @@ test_that("sfReapportion and areal results match (areal data example)", {
 
 })
 
+###
+### test against {sf}
+###
+
+test_that("sfReapportion and sf results match (our data example)", {
+
+  skip_on_cran()
+
+  library(sf)
+
+  data(ParisPollingStations2012)
+  data(ParisIris)
+  data(RP_2011_CS8_Paris)
+
+  iris <- sf::st_as_sf(ParisIris) %>%
+    dplyr::left_join(select(RP_2011_CS8_Paris, IRIS, C11_POP15P),
+                     by = c("DCOMIRIS" = "IRIS"))
+
+  with_sf <- suppressWarnings(sf::st_interpolate_aw(iris["C11_POP15P"],
+                                                    ParisPollingStations2012,
+                                                    extensive = TRUE))
+
+  with_ours <- sfReapportion(ParisIris,
+                             ParisPollingStations2012,
+                             RP_2011_CS8_Paris,
+                             "DCOMIRIS", "ID", "IRIS",
+                             variables = "C11_POP15P")
+
+  # glimpse(with_sf)
+  # glimpse(with_ours)
+
+  # head(sort(with_sf$C11_POP15P), 10)
+  # head(sort(with_ours$C11_POP15P), 10)
+
+  testthat::expect_equal(sort(with_sf$C11_POP15P), sort(with_ours$C11_POP15P))
+
+})
+
 # done
