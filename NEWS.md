@@ -1,3 +1,11 @@
+# version 0.1.8 (2026-01-22)
+
+- fixed a bug that occurred if a single variable was passed to `variables`
+- added two data equality tests against `sf::st_interpolate_aw`
+- added one more data equality test against the `areal` package
+- package now also suggests the `populR` package
+- support for `sf` objects has now been reasonably tested
+
 # version 0.1.7 (2026-01-21)
 
 - losing dependency to `rlang` (removed `.data` pronoun from tidy-selections)

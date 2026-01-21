@@ -96,6 +96,10 @@ areal_equiv <- areal::aw_interpolate(ParisPollingStations2012_sf, tid = ID,
 
 [areal]: https://cran.r-project.org/package=areal
 
+The package contains further tests against the [`st_interpolate_aw`][st_interpolate_aw] function of the [`sf`][sf] package.
+
+[st_interpolate_aw]: https://r-spatial.github.io/sf/reference/interpolate_aw.html
+
 ## See also
 
 - [Areal Interpolation in R][prener2] in the [`areal`][areal] package
@@ -104,7 +108,6 @@ areal_equiv <- areal::aw_interpolate(ParisPollingStations2012_sf, tid = ID,
 - [Population Downscaling Using Areal Interpolation - A Comparative Analysis][batsaris] in the [`populR`][populR] package
 - [R-spatial evolution: retirement of rgdal, rgeos and maptools][retired] (2022)
 - [r-spatial/sf#2563][issue2563] for a technical discussion on merging polygons
-- [`st_interpolate_aw`][st_interpolate] in the [`sf`][sf] package
 
 I also wrote a [very short blog post](https://f.briatte.org/r/sfReapportion) to illustrate what the package does.
 
@@ -113,6 +116,5 @@ I also wrote a [very short blog post](https://f.briatte.org/r/sfReapportion) to 
 [populR]: https://cran.r-project.org/package=populR
 [prener1]: https://cloud.r-project.org/web/packages/areal/vignettes/areal-weighted-interpolation.html
 [prener2]: https://cloud.r-project.org/web/packages/areal/vignettes/areal.html
-[st_interpolate]: https://r-spatial.github.io/sf/reference/interpolate_aw.html
 [sds53]: https://r-spatial.org/book/05-Attributes.html#sec-area-weighted
 [sds]: https://r-spatial.github.io/sf/index.html

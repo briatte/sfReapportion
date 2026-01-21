@@ -153,6 +153,10 @@ test_that("sfReapportion and areal results match (areal data example)", {
 
   skip_on_cran()
 
+  library(areal)
+  library(dplyr)
+  library(sf)
+
   with_areal <- areal::aw_interpolate(areal::ar_stl_wards, tid = WARD,
                                       source = areal::ar_stl_race, sid = GEOID,
                                       weight = "total",
@@ -185,6 +189,7 @@ test_that("sfReapportion and sf results match (our data example)", {
 
   skip_on_cran()
 
+  library(dplyr)
   library(sf)
 
   data(ParisPollingStations2012)
@@ -192,8 +197,8 @@ test_that("sfReapportion and sf results match (our data example)", {
   data(RP_2011_CS8_Paris)
 
   iris <- sf::st_as_sf(ParisIris) %>%
-    dplyr::left_join(select(RP_2011_CS8_Paris, IRIS, C11_POP15P),
-                     by = c("DCOMIRIS" = "IRIS"))
+    left_join(select(RP_2011_CS8_Paris, IRIS, C11_POP15P),
+              by = c("DCOMIRIS" = "IRIS"))
 
   with_sf <- suppressWarnings(sf::st_interpolate_aw(iris["C11_POP15P"],
                                                     ParisPollingStations2012,
@@ -205,13 +210,36 @@ test_that("sfReapportion and sf results match (our data example)", {
                              "DCOMIRIS", "ID", "IRIS",
                              variables = "C11_POP15P")
 
-  # glimpse(with_sf)
-  # glimpse(with_ours)
-
-  # head(sort(with_sf$C11_POP15P), 10)
-  # head(sort(with_ours$C11_POP15P), 10)
-
   testthat::expect_equal(sort(with_sf$C11_POP15P), sort(with_ours$C11_POP15P))
+
+})
+
+test_that("sfReapportion and sf results match (populR data example)", {
+
+  skip_on_cran()
+
+  library(areal)
+  library(populR)
+  library(sf)
+
+  data("src", package = "populR")
+  data("trg", package = "populR")
+
+  with_areal <- areal::aw_interpolate(trg, tid = "tid",
+                                      source = src, sid = "sid",
+                                      weight = "total", output = "sf",
+                                      extensive = "pop")
+
+  with_sf <- suppressWarnings(sf::st_interpolate_aw(src["pop"], trg,
+                                                    extensive = TRUE))
+
+  with_ours <- sfReapportion(src, trg,
+                             select(sf::st_drop_geometry(src), sid, pop),
+                             "sid", "tid", "sid") %>%
+    arrange(as.integer(tid))
+
+  testthat::expect_equal(with_areal$pop, with_sf$pop)
+  testthat::expect_equal(with_areal$pop, with_ours$pop)
 
 })
 
