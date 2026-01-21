@@ -110,7 +110,8 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
   ###
   ### exclude non-numeric variables from reapportionment
   ###
-  excl <- base::setdiff(variables, names(Filter(is.numeric, data[, variables])))
+  excl <- Filter(is.numeric, subset(data, select = variables))
+  excl <- base::setdiff(variables, names(excl))
   if (length(excl) > 0) {
     variables <- variables[ !variables %in% excl ]
     warning("non-numeric variable(s) ignored: ", paste(excl, collapse = ", "))
