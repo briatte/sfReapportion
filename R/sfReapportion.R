@@ -246,16 +246,23 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
   ### getting them from `names`
   ###
   # intdf <- data.frame(intname = names(int)) # make a data frame for the intersected SpatialPolygon, using names from the output list from int
-  intdf <- data.frame(intname = rownames(int)) # make a data frame for the intersected SpatialPolygon, using names from the output list from int
+  # make a data frame for the intersected SpatialPolygon, using names from the
+  # output list from int
+  intdf <- data.frame(intname = rownames(int))
   intdf$intname <- as.character(intdf$intname) # convert the name to character
   splitid <- strsplit(intdf$intname, " ", fixed = TRUE) # split the names
   splitid <- do.call("rbind", splitid) # rbind those back together
-  colnames(splitid) <- c("old_ID", "new_ID") # now you have the administrative area ID and the polygonID as separate variables in a dataframe that correspond to the int SpatialPolygon.
-  intdf <- data.frame(intdf, splitid) # make that into a dataframe
-  intdf$old_ID <- as.character(intdf$old_ID) # convert to character
-  intdf$new_ID <- as.character(intdf$new_ID) # convert to character.
+  # now you have the administrative area ID and the polygonID as separate
+  # variables in a dataframe that correspond to the int SpatialPolygon
+  colnames(splitid) <- c("old_ID", "new_ID")
+  # make that into a data.frame
+  intdf <- data.frame(intdf, splitid)
+  # convert to character
+  intdf$old_ID <- as.character(intdf$old_ID)
+  intdf$new_ID <- as.character(intdf$new_ID)
 
-  # now you have a dataframe corresponding to the intersected SpatialPolygon object
+  # now you have a data.frame corresponding to the intersected SpatialPolygon
+  # object
 
   if (!is.null(weight_matrix)) {
     ###
@@ -263,7 +270,7 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
     ###
     # warning("use of weight matrix not yet tested")
 
-    # # check in which intersected polygon each point stands
+    # check in which intersected polygon each point stands
     weight_matrix_int <- sp::over(weight_matrix, int)
     # use points weights to reapportion
     intdf$polyarea <- purrr::map_int(1:length(int), ~ sum(weight_matrix@data[ weight_matrix_int %in% .x, weight_matrix_var ]))
@@ -338,7 +345,7 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
     intpop <- dplyr::summarise_at(intpop, c(variables, "weights"),
                                   sum, na.rm = TRUE)
     intpop <- dplyr::mutate_at(intpop, variables, ~ .x / weights)
-    names(intpop)[length(names(intpop))] <- weights
+    names(intpop)[ length(names(intpop)) ] <- weights
 
   }
 
