@@ -293,7 +293,7 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
   ### note: `left_join` is much faster than `base::merge`
   ###
   # join together the two dataframes by the administrative ID
-  intdf2 <- dplyr::left_join(intdf, data, by = c("old_ID" = "old_ID"))
+  intdf <- dplyr::left_join(intdf, data, by = "old_ID")
   if (mode %in% "count") {
     ###
     ### note: {dplyr} code roughly 1.5x faster than older {plyr} code
@@ -305,9 +305,9 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
     #                            ~ .x * (dplyr::all_of(polyarea) /
     #                                      dplyr::all_of(departarea)))
     ## new variable creation forced to avoid using `all_of`
-    intdf2$weights <- (intdf2$polyarea / intdf2$departarea)
+    intdf$weights <- (intdf$polyarea / intdf$departarea)
     ## next line replaces the `mutate_at` line commented out above
-    intpop <- dplyr::mutate_at(intdf2, variables, ~ .x * weights)
+    intpop <- dplyr::mutate_at(intdf, variables, ~ .x * weights)
     # remove `units` type (drastically speeds up the `sum` operation below)
     intpop <- dplyr::mutate_at(intpop, variables, as.double)
     # subset to target variables
@@ -325,7 +325,7 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
     # intpop <- dplyr::select(intdf2, new_ID, dplyr::all_of(variables),
     #                         .data$polyarea, .data$departarea,
     #                         weights = dplyr::all_of(weights))
-    intpop <- dplyr::select(intdf2, new_ID, dplyr::all_of(variables),
+    intpop <- dplyr::select(intdf, new_ID, dplyr::all_of(variables),
                             dplyr::all_of("polyarea"),
                             dplyr::all_of("departarea"),
                             weights = dplyr::all_of(weights))
