@@ -221,17 +221,19 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
   ###
   ### switch to `st_intersects`
   ###
-  # old_geom_sub <- rgeos::gIntersects(old_geom, new_geom, byid = TRUE) # test for areas that don't intersect
-  old_geom_sub <- sf::st_intersects(old_geom, new_geom) # test for areas that don't intersect
-  old_geom_sub2 <- apply(old_geom_sub, 2, sum) # test across all polygons in the SpatialPolygon whether it intersects or not
-  old_geom_sub3 <- old_geom[ old_geom_sub2 > 0, ] # keep only the ones that actually intersect
+  # test for areas that don't intersect
+  # old_geom_sub <- rgeos::gIntersects(old_geom, new_geom, byid = TRUE)
+  # test across all polygons in the SpatialPolygon whether it intersects or not,
+  # and keep only the ones that actually intersect
+  int <- old_geom[ apply(sf::st_intersects(old_geom, new_geom), 2, sum) > 0, ]
 
   ###
   ### switch to `st_intersection`
   ###
   # perform the intersection. This takes a while since it also calculates area and other things, which is why we trimmed out irrelevant areas first
   # int <- rgeos::gIntersection(old_geom_sub3, new_geom, byid = TRUE, drop_lower_td = TRUE) # intersect the polygon and your administrative boundaries
-  int <- suppressWarnings(sf::st_intersection(old_geom_sub3, new_geom)) # intersect the polygon and your administrative boundaries
+  # intersect the polygon and your administrative boundaries
+  int <- suppressWarnings(sf::st_intersection(int, new_geom))
 
   ###
   ### emulate how `rgeos::gIntersection` handled row names
