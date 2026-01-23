@@ -2,6 +2,17 @@
 ## TODO: sort out which tests should really be skipped on CRAN
 ##
 
+test_that("mode is either count or proportion", {
+  expect_error(sfReapportion(1, 1, mode = "foo"), "mode")
+})
+
+test_that("geoms and data are in supported formats", {
+  data(ParisIris)
+  expect_error(sfReapportion(1, ParisIris), "SpatialPolygonsDataFrame")
+  expect_error(sfReapportion(ParisIris, 1), "SpatialPolygonsDataFrame")
+  expect_error(sfReapportion(ParisIris, ParisIris, 1), "data.frame")
+})
+
 test_that("sfReapportion reapportions data correctly", {
 
   skip_on_cran()

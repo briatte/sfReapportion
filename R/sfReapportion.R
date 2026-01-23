@@ -5,7 +5,9 @@
 #' @author Joël Gombin (initial \code{sp} version),
 #' François Briatte (\code{sf} port)
 #' @note Inspiration from \url{https://stackoverflow.com/a/17703903} and
-#' \url{https://rstudio-pubs-static.s3.amazonaws.com/6577_3b66f8d8f4984fb2807e91224defa854.html}. All mistakes are mine, obviously.
+#' \url{https://rpubs.com/PaulWilliamson/6577}.
+#' Original \code{sp} version available at \url{https://github.com/joelgombin/spReapportion}.
+#' All mistakes are mine, obviously.
 #' @param old_geom a `SpatialPolygonsDataFrame` or `sf` object
 #' representing the initial geometry.
 #' @param new_geom a `SpatialPolygonsDataFrame` or `sf` object
@@ -25,7 +27,8 @@
 #' variable containing weights (i.e. the total number of observations per unit
 #' in the `old_geom`).
 #' @param weight_matrix \strong{(optional, untested)} a `SpatialPointsDataFrame`
-#' indicating where are the observations (inhabitants, voters, etc.).
+#' or `sf` object indicating where are the observations (inhabitants, voters,
+#' etc.).
 #' @param weight_matrix_var \strong{(optional, untested)} the name of the
 #' variable in \code{weight_matrix} containing the weights.
 #' @export
@@ -72,6 +75,9 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
               "sf::st_make_valid(", old_geom_name, ")")
     old_geom <- sf::as_Spatial(old_geom)
   }
+  if (!inherits(old_geom, "SpatialPolygonsDataFrame"))
+    stop("`old_geom` should be a `SpatialPolygonsDataFrame` or `sf` object")
+
   if (inherits(new_geom, "sf")) {
     # if (is.na(sf::st_crs(new_geom)))
     #   warning("Missing CRS found in ", new_geom_name,
@@ -87,6 +93,8 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
               "sf::st_make_valid(", new_geom_name, ")")
     new_geom <- sf::as_Spatial(new_geom)
   }
+  if (!inherits(new_geom, "SpatialPolygonsDataFrame"))
+    stop("`new_geom` should be a `SpatialPolygonsDataFrame` or `sf` object")
 
   if (inherits(weight_matrix, "sf"))
     weight_matrix <- sf::as_Spatial(weight_matrix)
@@ -107,6 +115,8 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
     stop(paste(variables[ !(variables %in% names(data)) ],
                "is not a variable from", data_name))
 
+  if (!inherits(data, "data.frame"))
+    stop("`data` should be a `data.frame` of some sort")
   ###
   ### exclude non-numeric variables from reapportionment
   ###
