@@ -1,3 +1,7 @@
+# version 0.1.9 (2026-01-23)
+
+- protect against `polyarea`, `departarea` and `weights` in variable names
+
 # version 0.1.8 (2026-01-22)
 
 - fixed a bug that occurred if a single variable was passed to `variables`
