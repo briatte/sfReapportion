@@ -1,6 +1,7 @@
 # version 0.1.9 (2026-01-23)
 
-- protect against `polyarea`, `departarea` and `weights` in variable names
+- protect against `polyarea`, `departarea` and `weights` in user variable names
+- adding code coverage via CodeCov.io
 
 # version 0.1.8 (2026-01-22)
 

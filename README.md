@@ -109,6 +109,7 @@ The package contains further tests against the [`st_interpolate_aw`][st_interpol
 - [Areal Interpolation in R][prener2] in the [`areal`][areal] package
 - [Areal Weighted Interpolation][prener1] in the [`areal`][areal] package
 - ["Area-weighted interpolation"][sds53] (in [_Spatial Data Science_][sds], 2023)
+- [Guidelines on areal interpolation methods][do20]
 - [Population Downscaling Using Areal Interpolation - A Comparative Analysis][batsaris] in the [`populR`][populR] package
 - [R-spatial evolution: retirement of rgdal, rgeos and maptools][retired] (2022)
 - [r-spatial/sf#2563][issue2563] for a technical discussion on merging polygons
@@ -116,6 +117,7 @@ The package contains further tests against the [`st_interpolate_aw`][st_interpol
 I also wrote a [very short blog post](https://f.briatte.org/r/sfReapportion) to illustrate what the package does.
 
 [batsaris]: https://cran.r-project.org/web/packages/populR/vignettes/areal-interpolation-comparison.html
+[do20]: http://www.thibault.laurent.free.fr/code/areal/
 [issue2563]: https://github.com/r-spatial/sf/issues/2563
 [populR]: https://cran.r-project.org/package=populR
 [prener1]: https://cloud.r-project.org/web/packages/areal/vignettes/areal-weighted-interpolation.html
