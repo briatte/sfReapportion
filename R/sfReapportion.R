@@ -273,20 +273,20 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
     # check in which intersected polygon each point stands
     weight_matrix_int <- sp::over(weight_matrix, int)
     # use points weights to reapportion
-    intdf$polyarea <- purrr::map_int(1:length(int), ~ sum(weight_matrix@data[ weight_matrix_int %in% .x, weight_matrix_var ]))
-    data$departarea <- purrr::map_int(old_geom@data[, old_ID], ~ sum(weight_matrix@data[ weight_matrix@data[, old_ID ] %in% .x, weight_matrix_var ]))[ match(data[[ "old_ID" ]], old_geom@data[[ old_ID ]]) ]
+    intdf$..polyarea <- purrr::map_int(1:length(int), ~ sum(weight_matrix@data[ weight_matrix_int %in% .x, weight_matrix_var ]))
+    data$..departarea <- purrr::map_int(old_geom@data[, old_ID], ~ sum(weight_matrix@data[ weight_matrix@data[, old_ID ] %in% .x, weight_matrix_var ]))[ match(data[[ "old_ID" ]], old_geom@data[[ old_ID ]]) ]
   } else {
     ###
     ### switch to `st_area`
     ###
     # if we don't have weights we just use areas
     # intdf$polyarea <- rgeos::gArea(int, byid = TRUE) # get area from the polygon SP object and put it in the df
-    intdf$polyarea <- sf::st_area(int) # get area from the polygon SP object and put it in the df
+    intdf$..polyarea <- sf::st_area(int) # get area from the polygon SP object and put it in the df
     ###
     ### switch to `st_area` (again)
     ###
     # data$departarea <- rgeos::gArea(old_geom, byid = TRUE)[match(data$old_ID, old_geom@data[, old_ID])]
-    data$departarea <- sf::st_area(old_geom)[ match(data$old_ID, old_geom[[ old_ID ]]) ]
+    data$..departarea <- sf::st_area(old_geom)[ match(data$old_ID, old_geom[[ old_ID ]]) ]
   }
 
   ###
@@ -305,9 +305,9 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
     #                            ~ .x * (dplyr::all_of(polyarea) /
     #                                      dplyr::all_of(departarea)))
     ## new variable creation forced to avoid using `all_of`
-    intdf$weights <- (intdf$polyarea / intdf$departarea)
+    intdf$..weights <- (intdf$..polyarea / intdf$..departarea)
     ## next line replaces the `mutate_at` line commented out above
-    intpop <- dplyr::mutate_at(intdf, variables, ~ .x * weights)
+    intpop <- dplyr::mutate_at(intdf, variables, ~ .x * ..weights)
     # remove `units` type (drastically speeds up the `sum` operation below)
     intpop <- dplyr::mutate_at(intpop, variables, as.double)
     # subset to target variables
@@ -326,25 +326,25 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
     #                         .data$polyarea, .data$departarea,
     #                         weights = dplyr::all_of(weights))
     intpop <- dplyr::select(intdf, new_ID, dplyr::all_of(variables),
-                            dplyr::all_of("polyarea"),
-                            dplyr::all_of("departarea"),
-                            weights = dplyr::all_of(weights))
+                            dplyr::all_of("..polyarea"),
+                            dplyr::all_of("..departarea"),
+                            ..weights = dplyr::all_of(weights))
     ## changed for {tidyselect} 1.2.0
     # intpop <- dplyr::mutate_at(intpop, variables,
     #                            ~ .x * weights * (.data$polyarea /
     #                                                .data$departarea))
     ## before {tidyselect} 1.2.0, the code started with `mutate_at` and then
     ## continued with the line below -- the new code works the other way round
-    intpop$weights <- intpop$weights * (intpop$polyarea / intpop$departarea)
+    intpop$..weights <- intpop$..weights * (intpop$..polyarea / intpop$..departarea)
     ## next line replaces the `mutate_at` line commented out above
-    intpop <- dplyr::mutate_at(intpop, variables, ~ .x * weights)
+    intpop <- dplyr::mutate_at(intpop, variables, ~ .x * ..weights)
     # remove `units` type (drastically speeds up the `sum` operation below)
-    intpop <- dplyr::mutate_at(intpop, c(variables, "weights"), as.double)
+    intpop <- dplyr::mutate_at(intpop, c(variables, "..weights"), as.double)
     # aggregate by sum (as Joël wrote, other functions might be suitable)
     intpop <- dplyr::group_by(intpop, new_ID)
-    intpop <- dplyr::summarise_at(intpop, c(variables, "weights"),
+    intpop <- dplyr::summarise_at(intpop, c(variables, "..weights"),
                                   sum, na.rm = TRUE)
-    intpop <- dplyr::mutate_at(intpop, variables, ~ .x / weights)
+    intpop <- dplyr::mutate_at(intpop, variables, ~ .x / ..weights)
     names(intpop)[ length(names(intpop)) ] <- weights
 
   }
