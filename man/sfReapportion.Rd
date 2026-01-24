@@ -58,7 +58,9 @@ example in the context of working with different administrative units.
 }
 \note{
 Inspiration from \url{https://stackoverflow.com/a/17703903} and
-\url{https://rstudio-pubs-static.s3.amazonaws.com/6577_3b66f8d8f4984fb2807e91224defa854.html}. All mistakes are mine, obviously.
+\url{https://rpubs.com/PaulWilliamson/6577}.
+Original \code{sp} version available at \url{https://github.com/joelgombin/spReapportion}.
+All mistakes are mine, obviously.
 }
 \author{
 Joël Gombin (initial \code{sp} version),
