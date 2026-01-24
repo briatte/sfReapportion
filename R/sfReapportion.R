@@ -110,13 +110,16 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
   if (!(new_ID %in% names(new_geom@data)))
     stop(paste(new_ID, "is not a variable from", new_geom_name))
 
-  # check variables
-  if (sum(!(variables %in% names(data))) > 0)
-    stop(paste(variables[ !(variables %in% names(data)) ],
-               "is not a variable from", data_name))
-
   if (!inherits(data, "data.frame"))
     stop("`data` should be a `data.frame` of some sort")
+  # check ID
+  if (!(data_ID %in% names(data)))
+    stop(paste(data_ID, "is not a variable from", data_name))
+  # check variables
+  if (!all(variables %in% names(data)))
+    stop(paste(variables[ !(variables %in% names(data)) ], collapse = ", "),
+               " not found in ", data_name)
+
   ###
   ### exclude non-numeric variables from reapportionment
   ###

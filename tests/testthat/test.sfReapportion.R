@@ -3,16 +3,20 @@
 ##
 
 test_that("mode is either count or proportion", {
-  expect_error(sfReapportion(1, 1, mode = "foo"), "mode")
+  testthat::expect_error(sfReapportion(1, 1, mode = "foo"), "mode")
 })
 
 test_that("geoms and data are in supported formats", {
   data(ParisIris)
   # note: tests below won't get fooled either by more tricky data types, such
   # as `sfc` or `SpatialPointsDataFrame` objects
-  expect_error(sfReapportion(1, ParisIris), "SpatialPolygonsDataFrame")
-  expect_error(sfReapportion(ParisIris, 1), "SpatialPolygonsDataFrame")
-  expect_error(sfReapportion(ParisIris, ParisIris, 1), "data.frame")
+  testthat::expect_error(sfReapportion(1, ParisIris, "foo", "bar"),
+                         "SpatialPolygonsDataFrame")
+  testthat::expect_error(sfReapportion(ParisIris, 1, "foo", "bar"),
+                         "SpatialPolygonsDataFrame")
+  testthat::expect_error(sfReapportion(ParisIris, ParisIris, 1,
+                                       "DCOMIRIS", "DCOMIRIS", "foo"),
+                         "data.frame")
 })
 
 test_that("IDs exist in the old and new geoms", {
@@ -20,17 +24,25 @@ test_that("IDs exist in the old and new geoms", {
   data(ParisIris)
   data(RP_2011_CS8_Paris)
   # old_geom
-  expect_error(sfReapportion(ParisIris, ParisPollingStations2012,
-                             RP_2011_CS8_Paris, "foo", "ID", "IRIS"),
-               "not a variable from")
+  testthat::expect_error(sfReapportion(ParisIris, ParisPollingStations2012,
+                                       RP_2011_CS8_Paris,
+                                       "foo", "ID", "IRIS"),
+                         "not a variable from")
   # new_geom
-  expect_error(sfReapportion(ParisIris, ParisPollingStations2012,
-                             RP_2011_CS8_Paris, "DCOMIRIS", "foo", "IRIS"),
-               "not a variable from")
+  testthat::expect_error(sfReapportion(ParisIris, ParisPollingStations2012,
+                                       RP_2011_CS8_Paris,
+                                       "DCOMIRIS", "foo", "IRIS"),
+                         "not a variable from")
   # data
-  expect_error(sfReapportion(ParisIris, ParisPollingStations2012,
-                             RP_2011_CS8_Paris, "DCOMIRIS", "ID", "foo"),
-               "not a variable from")
+  testthat::expect_error(sfReapportion(ParisIris, ParisPollingStations2012,
+                                       RP_2011_CS8_Paris,
+                                       "DCOMIRIS", "ID", "foo"),
+                         "not a variable from")
+  testthat::expect_error(sfReapportion(ParisIris, ParisPollingStations2012,
+                                       RP_2011_CS8_Paris,
+                                       "DCOMIRIS", "ID", "IRIS",
+                                       variables = c("foo", "bar")),
+                         "not found in")
 })
 
 test_that("non-numeric variables get ignored", {
@@ -40,12 +52,12 @@ test_that("non-numeric variables get ignored", {
   RP_2011_CS8_Paris$foo <- "foo"
   RP_2011_CS8_Paris$bar <- TRUE
   RP_2011_CS8_Paris$not_ignored <- 1L
-  expect_warning(test_result <- sfReapportion(ParisIris,
-                                              ParisPollingStations2012,
-                                              RP_2011_CS8_Paris,
-                                              "DCOMIRIS", "ID", "IRIS"),
-                 "non-numeric.*ignored.*foo.*bar")
-  expect_in("not_ignored", names(test_result))
+  testthat::expect_warning(result <- sfReapportion(ParisIris,
+                                                   ParisPollingStations2012,
+                                                   RP_2011_CS8_Paris,
+                                                   "DCOMIRIS", "ID", "IRIS"),
+                           "non-numeric.*ignored.*foo.*bar")
+  testthat::expect_in("not_ignored", names(result))
 })
 
 test_that("sfReapportion reapportions data correctly", {
@@ -60,9 +72,9 @@ test_that("sfReapportion reapportions data correctly", {
                                            ParisPollingStations2012,
                                            RP_2011_CS8_Paris,
                                            "DCOMIRIS", "ID", "IRIS")
-  expect_equal_to_reference(CS_ParisPollingStations,
-                            "CS_ParisPollingStations.rds",
-                            update = FALSE)
+  testthat::expect_equal_to_reference(CS_ParisPollingStations,
+                                      "CS_ParisPollingStations.rds",
+                                      update = FALSE)
 
 })
 
@@ -84,9 +96,9 @@ test_that("sfReapportion works with `sf` objects", {
                                            ParisPollingStations2012,
                                            RP_2011_CS8_Paris,
                                            "DCOMIRIS", "ID", "IRIS")
-  expect_equal_to_reference(CS_ParisPollingStations,
-                            "CS_ParisPollingStations.rds",
-                            update = FALSE)
+  testthat::expect_equal_to_reference(CS_ParisPollingStations,
+                                      "CS_ParisPollingStations.rds",
+                                      update = FALSE)
 
 })
 
@@ -102,11 +114,11 @@ test_that("sfReapportion can merge polygons", {
   x <- seq(42, 42 + 150, by = 2)
   ParisIris@data[["DCOMIRIS"]][ x ] <- ParisIris@data[["DCOMIRIS"]][ x + 1 ]
 
-  expect_message(sfReapportion(ParisIris,
-                               ParisPollingStations2012,
-                               RP_2011_CS8_Paris,
-                               "DCOMIRIS", "ID", "IRIS"),
-                 "^Merging 76 SpatialPolygons with duplicate IDs")
+  testthat::expect_message(sfReapportion(ParisIris,
+                                         ParisPollingStations2012,
+                                         RP_2011_CS8_Paris,
+                                         "DCOMIRIS", "ID", "IRIS"),
+                           "^Merging 76 SpatialPolygons with duplicate IDs")
 
 })
 
@@ -133,35 +145,35 @@ test_that("sfReapportion reapportions data correctly with proportions data", {
                                                variables = pct_vars,
                                                weights = "C11_POP15P",
                                                mode = "proportion")
-  expect_equal_to_reference(CS_ParisPollingStationsProp,
-                            "CS_ParisPollingStationsprop.rds",
-                            update = FALSE)
+  testthat::expect_equal_to_reference(CS_ParisPollingStationsProp,
+                                      "CS_ParisPollingStationsprop.rds",
+                                      update = FALSE)
 
   # bad arguments
-  expect_error(sfReapportion(ParisIris,
-                             ParisPollingStations2012,
-                             RP_2011_CS8_Paris,
-                             "DCOMIRIS", "ID", "IRIS",
-                             variables = paste0("CS", 1:8, "pc"),
-                             # weights = "C11_POP15P",
-                             mode = "proportion"),
-               "`weights` required")
-  expect_error(sfReapportion(ParisIris,
-                             ParisPollingStations2012,
-                             RP_2011_CS8_Paris,
-                             "DCOMIRIS", "ID", "IRIS",
-                             variables = paste0("CS", 1:8, "pc"),
-                             weights = "C11_POP15P",
-                             mode = "count"),
-               "`mode`.*proportion")
-  expect_error(sfReapportion(ParisIris,
-                             ParisPollingStations2012,
-                             RP_2011_CS8_Paris,
-                             "DCOMIRIS", "ID", "IRIS",
-                             variables = paste0("CS", 1:8, "foo"),
-                             weights = "C11_POP15P",
-                             mode = "count"),
-               "not a variable")
+  testthat::expect_error(sfReapportion(ParisIris,
+                                       ParisPollingStations2012,
+                                       RP_2011_CS8_Paris,
+                                       "DCOMIRIS", "ID", "IRIS",
+                                       variables = pct_vars,
+                                       # weights = "C11_POP15P",
+                                       mode = "proportion"),
+                         "`weights` required")
+  testthat::expect_error(sfReapportion(ParisIris,
+                                       ParisPollingStations2012,
+                                       RP_2011_CS8_Paris,
+                                       "DCOMIRIS", "ID", "IRIS",
+                                       variables = pct_vars,
+                                       weights = "C11_POP15P",
+                                       mode = "count"),
+                         "`mode`.*proportion")
+  testthat::expect_error(sfReapportion(ParisIris,
+                                       ParisPollingStations2012,
+                                       RP_2011_CS8_Paris,
+                                       "DCOMIRIS", "ID", "IRIS",
+                                       variables = pct_vars,
+                                       weights = "foo",
+                                       mode = "proportion"),
+                         "not a variable from")
 })
 
 test_that("NA values are handled correctly", {
@@ -170,13 +182,19 @@ test_that("NA values are handled correctly", {
   data(ParisIris)
   data(RP_2011_CS8_Paris)
 
-  CS_ParisPollingStations <- sfReapportion(ParisIris[ParisIris@data$DEPCOM %in% "75104",], ParisPollingStations2012[ParisPollingStations2012@data$arrondisse %in% "4",], RP_2011_CS8_Paris[substr(RP_2011_CS8_Paris$IRIS, 1, 5) %in% "75104",], "DCOMIRIS", "ID", "IRIS")
-  expect_equal(sum(is.na(CS_ParisPollingStations)), 0)
+  CS_ParisPollingStations <- sfReapportion(ParisIris[ ParisIris@data$DEPCOM %in% "75104", ],
+                                           ParisPollingStations2012[ ParisPollingStations2012@data$arrondisse %in% "4", ],
+                                           RP_2011_CS8_Paris[ substr(RP_2011_CS8_Paris$IRIS, 1, 5) %in% "75104", ],
+                                           "DCOMIRIS", "ID", "IRIS")
+  testthat::expect_equal(sum(is.na(CS_ParisPollingStations)), 0)
 
-  RP_2011_CS8_Paris[RP_2011_CS8_Paris$IRIS %in% "751041399", -1] <- NA
+  RP_2011_CS8_Paris[ RP_2011_CS8_Paris$IRIS %in% "751041399", -1 ] <- NA
 
-  CS_ParisPollingStations <- sfReapportion(ParisIris[ParisIris@data$DEPCOM %in% "75104",], ParisPollingStations2012[ParisPollingStations2012@data$arrondisse %in% "4",], RP_2011_CS8_Paris[substr(RP_2011_CS8_Paris$IRIS, 1, 5) %in% "75104",], "DCOMIRIS", "ID", "IRIS")
-  expect_equal(sum(is.na(CS_ParisPollingStations)), 0)
+  CS_ParisPollingStations <- sfReapportion(ParisIris[ ParisIris@data$DEPCOM %in% "75104", ],
+                                           ParisPollingStations2012[ ParisPollingStations2012@data$arrondisse %in% "4", ],
+                                           RP_2011_CS8_Paris[ substr(RP_2011_CS8_Paris$IRIS, 1, 5) %in% "75104", ],
+                                           "DCOMIRIS", "ID", "IRIS")
+  testthat::expect_equal(sum(is.na(CS_ParisPollingStations)), 0)
 
 })
 
@@ -227,6 +245,7 @@ test_that("sfReapportion and areal results match (areal data example)", {
 
   skip_on_cran()
 
+  skip_if_not_installed("areal")
   library(areal)
   library(dplyr)
   library(sf)
@@ -292,7 +311,10 @@ test_that("sfReapportion and sf results match (populR data example)", {
 
   skip_on_cran()
 
+  skip_if_not_installed("areal")
+  skip_if_not_installed("populR")
   library(areal)
+  library(dplyr)
   library(populR)
   library(sf)
 

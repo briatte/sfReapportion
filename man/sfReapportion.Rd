@@ -47,7 +47,8 @@ variable containing weights (i.e. the total number of observations per unit
 in the `old_geom`).}
 
 \item{weight_matrix}{\strong{(optional, untested)} a `SpatialPointsDataFrame`
-indicating where are the observations (inhabitants, voters, etc.).}
+or `sf` object indicating where are the observations (inhabitants, voters,
+etc.).}
 
 \item{weight_matrix_var}{\strong{(optional, untested)} the name of the
 variable in \code{weight_matrix} containing the weights.}
