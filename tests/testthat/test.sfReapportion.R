@@ -60,6 +60,56 @@ test_that("non-numeric variables get ignored", {
   testthat::expect_in("not_ignored", names(result))
 })
 
+test_that("sfReapportion reprojects data if needed", {
+  data(ParisPollingStations2012)
+  data(ParisIris)
+  data(RP_2011_CS8_Paris)
+  ParisPollingStations2012 <- sp::spTransform(ParisPollingStations2012, "WGS84")
+  # much slower now
+  testthat::expect_message(sfReapportion(ParisIris, ParisPollingStations2012,
+                                         RP_2011_CS8_Paris,
+                                         "DCOMIRIS", "ID", "IRIS"),
+                           "Reprojecting")
+})
+
+test_that("sfReapportion recommends repairing invalid geoms", {
+  data(ParisPollingStations2012)
+  data(ParisIris)
+  data(RP_2011_CS8_Paris)
+
+  # example taken from sf::st_is_valid
+  invalid_geom <- sf::st_as_sfc("POLYGON((0 0, 0 10, 10 0, 10 10, 0 0))")
+
+  x <- sf::st_as_sf(ParisIris)
+  x[ 6, "geometry" ] <- invalid_geom
+
+  testthat::expect_false(all(sf::st_is_valid(x)))
+  testthat::expect_warning(sfReapportion(x, ParisPollingStations2012,
+                                         RP_2011_CS8_Paris,
+                                         "DCOMIRIS", "ID", "IRIS"),
+                           "Invalid geometries")
+
+  # let's fix it
+  x <- sf::st_make_valid(x)
+
+  # now onto `new_geom`
+  y <- sf::st_as_sf(ParisPollingStations2012)
+  y[ 7, "geometry" ] <- invalid_geom
+  testthat::expect_false(all(sf::st_is_valid(y)))
+  testthat::expect_warning(sfReapportion(ParisIris, y,
+                                         RP_2011_CS8_Paris,
+                                         "DCOMIRIS", "ID", "IRIS"),
+                           "Invalid geometries")
+
+  # let's fix it
+  y <- sf::st_make_valid(y)
+
+  # all fine now
+  testthat::expect_no_warning(sfReapportion(x, y, RP_2011_CS8_Paris,
+                                            "DCOMIRIS", "ID", "IRIS"))
+
+})
+
 test_that("sfReapportion reapportions data correctly", {
 
   skip_on_cran()
