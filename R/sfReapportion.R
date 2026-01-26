@@ -212,7 +212,11 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
     ###
     # weight_matrix <- weight_matrix[colSums(rgeos::gWithin(weight_matrix, old_geom, byid = TRUE)) > 0,]
     weight_matrix <- weight_matrix[ colSums(sf::st_within(weight_matrix, old_geom)) > 0, ]
-    weight_matrix_total <- sum(weight_matrix@data[, weight_matrix_var], na.rm = TRUE)
+    ###
+    ### note: line below does not seem to have any use later on, `weight_matrix_total`
+    ### is never invoked elsewhere in the code
+    ###
+    # weight_matrix_total <- sum(weight_matrix@data[, weight_matrix_var], na.rm = TRUE)
     ###
     ### note: `sp::over` should be replaceable with `sf::st_intersects`
     ###
