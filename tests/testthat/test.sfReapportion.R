@@ -154,8 +154,6 @@ test_that("sfReapportion works with `sf` objects", {
 
 test_that("sfReapportion can merge polygons", {
 
-  skip_on_cran()
-
   data(ParisPollingStations2012)
   data(ParisIris)
   data(RP_2011_CS8_Paris)
@@ -254,9 +252,8 @@ test_that("NA values are handled correctly", {
 
 test_that("sfReapportion and areal results match (our data example)", {
 
-  skip_on_cran()
-
   skip_if_not_installed("areal")
+
   library(areal)
   library(dplyr)
   library(sf)
@@ -293,9 +290,8 @@ test_that("sfReapportion and areal results match (our data example)", {
 
 test_that("sfReapportion and areal results match (areal data example)", {
 
-  skip_on_cran()
-
   skip_if_not_installed("areal")
+
   library(areal)
   library(dplyr)
   library(sf)
@@ -330,8 +326,6 @@ test_that("sfReapportion and areal results match (areal data example)", {
 
 test_that("sfReapportion and sf results match (our data example)", {
 
-  skip_on_cran()
-
   library(dplyr)
   library(sf)
 
@@ -359,10 +353,9 @@ test_that("sfReapportion and sf results match (our data example)", {
 
 test_that("sfReapportion and sf results match (populR data example)", {
 
-  skip_on_cran()
-
   skip_if_not_installed("areal")
   skip_if_not_installed("populR")
+
   library(areal)
   library(dplyr)
   library(populR)
