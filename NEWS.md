@@ -1,3 +1,9 @@
+# version 0.2.0 (2026-03-28)
+
+- better code coverage
+- support, minimal testing and README guide for `weight_matrix`
+- losing dependency to `purrr` (code speed mostly unchanged)
+
 # version 0.1.9 (2026-01-23)
 
 - protect against `polyarea`, `departarea` and `weights` in user variable names
