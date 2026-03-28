@@ -115,27 +115,25 @@ The data were obtained by subsetting from the _[Répertoire électoral unique][r
 ```r
 library(arrow)
 library(dplyr)
+library(sf)
 
 # subset polling stations
 bv20 <- arrow::read_parquet("table-bv-reu.parquet") %>%
   dplyr::filter(code_commune %in% c("75120")) %>%
-  dplyr::select(id_brut_reu, libelle_reu, dplyr::starts_with("nb_adresses"))
-
-# get their unique identifiers
-bv20 <- unique(bv20$id_brut_reu)
+  dplyr::select(id_brut_reu, libelle_reu, nb_adresses)
 
 # subset voter addresses (slow)
 addr20 <- arrow::read_parquet("table-adresses-reu.parquet") %>%
-    dplyr::filter(id_brut_bv_reu %in% bv20)
+    dplyr::filter(id_brut_bv_reu %in% unique(bv20$id_brut_reu))
 
 # convert to spatial points
-pts20 <- dplyr::group_by(addr20, geo_adresse, longitude, latitude) %>%
+Paris20eAddresses <- addr20 %>% 
+  dplyr::group_by(geo_adresse, longitude, latitude) %>%
   dplyr::summarise(nb_adresses = sum(nb_adresses)) %>%
   sf::st_as_sf(coords = c("longitude", "latitude")) %>%
   sf::st_set_crs(4326)
 
 # save to .rda (LazyData: true)
-Paris20eAddresses <- pts20
 save(Paris20eAddresses, file = "Paris20eAddresses.rda", compress = "xz")
 ```
 
