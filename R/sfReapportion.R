@@ -39,7 +39,6 @@
 #' @importFrom dplyr mutate_at
 #' @importFrom dplyr select
 #' @importFrom dplyr summarise_at
-#' @importFrom purrr map_int
 #'
 sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
                           variables = names(data)[-which(names(data) %in% data_ID)],
@@ -302,8 +301,20 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
     weight_matrix_int <- sf::as_Spatial(sf::st_geometry(int))
     weight_matrix_int <- sp::over(weight_matrix, weight_matrix_int)
     # use points weights to reapportion
-    intdf$..polyarea <- purrr::map_int(1:nrow(int), ~ sum(weight_matrix@data[ weight_matrix_int %in% .x, weight_matrix_var ]))
-    data$..departarea <- purrr::map_int(old_geom[[ old_ID ]], ~ sum(weight_matrix@data[ weight_matrix@data[, old_ID ] %in% .x, weight_matrix_var ]))[ match(data[[ "old_ID" ]], old_geom[[ old_ID ]]) ]
+    ###
+    ### losing dependency on {purrr} (non-strictness shouldn't be an issue)
+    ###
+    # intdf$..polyarea <- purrr::map_int(1:nrow(int), ~ sum(weight_matrix@data[ weight_matrix_int %in% .x, weight_matrix_var ]))
+    intdf$..polyarea <- sapply(1:nrow(int),
+                               function(x) sum(weight_matrix@data[ weight_matrix_int %in% x,
+                                                                   weight_matrix_var ]))
+    ###
+    ### losing dependency on {purrr} (non-strictness shouldn't be an issue)
+    ###
+    # data$..departarea <- purrr::map_int(old_geom[[ old_ID ]], ~ sum(weight_matrix@data[ weight_matrix@data[, old_ID ] %in% .x, weight_matrix_var ]))[ match(data[[ "old_ID" ]], old_geom[[ old_ID ]]) ]
+    data$..departarea <- sapply(old_geom[[ old_ID ]],
+                                function(x) sum(weight_matrix@data[ weight_matrix@data[, old_ID ] %in% x,
+                                                                    weight_matrix_var ]))[ match(data[[ "old_ID" ]], old_geom[[ old_ID ]]) ]
   } else {
     ###
     ### switch to `st_area`
