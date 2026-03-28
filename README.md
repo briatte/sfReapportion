@@ -20,6 +20,8 @@ The package was ported in order to be used in [this project](https://github.com/
 
 ## Installation
 
+If the package is not available from CRAN, install from GitHub instead:
+
 ```r
 install.packages("remotes")
 remotes::install_github("briatte/sfReapportion")
