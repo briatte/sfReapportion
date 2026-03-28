@@ -8,7 +8,7 @@
 An object of class \code{SpatialPolygonsDataFrame} with 992 rows and 7 columns.
 }
 \source{
-IGN: \url{https://geoservices.ign.fr/contoursiris}
+IGN: \url{https://cartes.gouv.fr/rechercher-une-donnee/dataset/IGNF_CONTOURS-IRIS}
 }
 \usage{
 ParisIris
