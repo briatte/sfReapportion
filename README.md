@@ -4,8 +4,8 @@
 
 A quick port of Joël Gombin's [`spReapportion`](https://github.com/joelgombin/spReapportion) package, without the dependencies to the [`maptools`][maptools] and [`rgeos`][rgeos] packages, which were [both retired][retired] in 2023, and with additional support for [`sf`][sf] objects.
 
-[maptools]: https://cran.r-project.org/package=maptools
-[rgeos]: https://cran.r-project.org/package=rgeos
+[maptools]: https://CRAN.R-project.org/package=maptools
+[rgeos]: https://CRAN.R-project.org/package=rgeos
 [retired]: https://r-spatial.org/r/2022/04/12/evolution.html
 [sf]: https://r-spatial.github.io/sf/index.html
 
@@ -100,7 +100,7 @@ areal_equiv <- areal::aw_interpolate(ParisPollingStations2012_sf, tid = ID,
 6 750010006   1619.144    5.790202710       83.05042
 ```
 
-[areal]: https://cran.r-project.org/package=areal
+[areal]: https://CRAN.R-project.org/package=areal
 
 The package contains further tests against the [`st_interpolate_aw`][st_interpolate_aw] function of the [`sf`][sf] package.
 
@@ -235,11 +235,11 @@ C11_POP15P_CS5 C11_POP15P_CS6 C11_POP15P_CS7 C11_POP15P_CS8
 
 I also wrote a [very short blog post](https://f.briatte.org/r/sfReapportion) to illustrate what the package does.
 
-[batsaris]: https://cran.r-project.org/web/packages/populR/vignettes/areal-interpolation-comparison.html
+[batsaris]: https://CRAN.R-project.org/package=populR/vignettes/areal-interpolation-comparison.html
 [do20]: http://www.thibault.laurent.free.fr/code/areal/
 [issue2563]: https://github.com/r-spatial/sf/issues/2563
-[populR]: https://cran.r-project.org/package=populR
-[prener1]: https://cloud.r-project.org/web/packages/areal/vignettes/areal-weighted-interpolation.html
-[prener2]: https://cloud.r-project.org/web/packages/areal/vignettes/areal.html
+[populR]: https://CRAN.R-project.org/package=populR
+[prener1]: https://CRAN.R-project.org/package=areal/vignettes/areal-weighted-interpolation.html
+[prener2]: https://CRAN.R-project.org/package=areal/vignettes/areal.html
 [sds53]: https://r-spatial.org/book/05-Attributes.html#sec-area-weighted
 [sds]: https://r-spatial.github.io/sf/index.html
