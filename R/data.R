@@ -19,7 +19,7 @@
 #'
 #' A shapefile of the IRIS (French census tract) of Paris in 2013.
 #'
-#' @source IGN: \url{https://geoservices.ign.fr/contoursiris}
+#' @source IGN: \url{https://cartes.gouv.fr/rechercher-une-donnee/dataset/IGNF_CONTOURS-IRIS}
 "ParisIris"
 
 #' Paris polling stations shapefile, 2012
