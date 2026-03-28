@@ -192,7 +192,14 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
     # new_geom <- sf::st_transform(new_geom, crs = sf::st_crs(old_geom))
     new_geom <- sp::spTransform(new_geom, old_geom@proj4string)
   }
-
+  ### also do that for the weights matrix
+  if (!is.null(weight_matrix)) {
+    if (!sp::identicalCRS(old_geom, weight_matrix)) {
+      message("Reprojecting `weight_matrix` to the same projection as ",
+              old_geom_name, "...")
+      weight_matrix <- sp::spTransform(weight_matrix, old_geom@proj4string)
+    }
+  }
 
   # apply weights -----------------------------------------------------------
 
@@ -202,7 +209,7 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
     ###
     ### warn about lack of testing
     ###
-    warning("Use of `weight_matrix` not yet tested (sorry), use carefully.")
+    warning("Use of `weight_matrix` only lightly tested (sorry), use carefully")
 
     if (old_ID %in% names(weight_matrix@data)) {
       weight_matrix@data <- weight_matrix@data[, -match(old_ID, names(weight_matrix@data)) ]
@@ -211,7 +218,11 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
     ### switch to sf::st_within
     ###
     # weight_matrix <- weight_matrix[colSums(rgeos::gWithin(weight_matrix, old_geom, byid = TRUE)) > 0,]
-    weight_matrix <- weight_matrix[ colSums(sf::st_within(weight_matrix, old_geom)) > 0, ]
+    # weight_matrix <- weight_matrix[ colSums(sf::st_within(weight_matrix, old_geom)) > 0, ]
+    int <- sf::st_within(sf::st_as_sf(weight_matrix), sf::st_as_sf(old_geom))
+    int <- t(as.matrix(int)) # required to get same output as rgeos::gWithin
+    weight_matrix <- weight_matrix[ colSums(int) > 0, ]
+    # note: `int` re-used later
     ###
     ### note: line below does not seem to have any use later on, `weight_matrix_total`
     ### is never invoked elsewhere in the code
@@ -288,10 +299,11 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
     # warning("use of weight matrix not yet tested")
 
     # check in which intersected polygon each point stands
-    weight_matrix_int <- sp::over(weight_matrix, int)
+    weight_matrix_int <- sf::as_Spatial(sf::st_geometry(int))
+    weight_matrix_int <- sp::over(weight_matrix, weight_matrix_int)
     # use points weights to reapportion
-    intdf$..polyarea <- purrr::map_int(1:length(int), ~ sum(weight_matrix@data[ weight_matrix_int %in% .x, weight_matrix_var ]))
-    data$..departarea <- purrr::map_int(old_geom@data[, old_ID], ~ sum(weight_matrix@data[ weight_matrix@data[, old_ID ] %in% .x, weight_matrix_var ]))[ match(data[[ "old_ID" ]], old_geom@data[[ old_ID ]]) ]
+    intdf$..polyarea <- purrr::map_int(1:nrow(int), ~ sum(weight_matrix@data[ weight_matrix_int %in% .x, weight_matrix_var ]))
+    data$..departarea <- purrr::map_int(old_geom[[ old_ID ]], ~ sum(weight_matrix@data[ weight_matrix@data[, old_ID ] %in% .x, weight_matrix_var ]))[ match(data[[ "old_ID" ]], old_geom[[ old_ID ]]) ]
   } else {
     ###
     ### switch to `st_area`

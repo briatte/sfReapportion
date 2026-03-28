@@ -224,6 +224,41 @@ test_that("sfReapportion reapportions data correctly with proportions data", {
                          "not a variable from")
 })
 
+test_that("sfReapportion works with a `weight_matrix`", {
+
+  library(dplyr)
+  library(sf)
+  library(sfReapportion)
+
+  # spatial points of voter addresses in Paris 20th district
+  data(Paris20eAddresses)
+
+  data(ParisPollingStations2012)
+  data(ParisIris)
+  data(RP_2011_CS8_Paris)
+
+  # subset geometry of polling stations (new geom, 76 polling stations)
+  ParisPollingStations2012 <- sf::st_as_sf(ParisPollingStations2012) %>%
+    dplyr::filter(arrondisse %in% c(20)) %>%
+    dplyr::mutate(id_brut_bv_reu = paste("75020_", num_bv))
+
+  # subset geometry of census tracts (old geom, 356 polygons)
+  testthat::expect_warning(ParisIris <- sf::st_as_sf(ParisIris) %>%
+                             sf::st_intersection(ParisPollingStations2012),
+                           "spatially constant")
+
+  # subset census data to reapportion (93 distinct census tracts)
+  RP_2011_CS8_Paris <- dplyr::filter(RP_2011_CS8_Paris,
+                                     IRIS %in% ParisIris$DCOMIRIS)
+
+  testthat::expect_warning(sfReapportion(ParisIris, ParisPollingStations2012,
+                                         RP_2011_CS8_Paris,
+                                         "DCOMIRIS", "ID", "IRIS",
+                                         weight_matrix = Paris20eAddresses,
+                                         weight_matrix_var = "nb_adresses"),
+                           "lightly tested")
+})
+
 test_that("NA values are handled correctly", {
 
   data(ParisPollingStations2012)

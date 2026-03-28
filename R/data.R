@@ -28,3 +28,17 @@
 #'
 #' @source Ville de Paris: \url{https://opendata.paris.fr/explore/dataset/zones-de-rattachement-des-bureaux-de-vote-en-2012/table/}
 "ParisPollingStations2012"
+
+#' Voter addresses in the 20th arrondissement of Paris
+#'
+#' All voter addresses located in the 20th arrondissement of Paris, according to
+#' the Répertoire électoral unique (REU). We first extracted polling stations
+#' from \code{table-bv-reu.parquet}, and then extracted addresses located within
+#' them from \code{table-adresses-reu.parquet}. Addresses were converted into
+#' spatial points of class \code{sf}. The weight variable is \code{nb_adresses},
+#' although that variable does not count voters per se: it measures the number
+#' of voter addresses at that particular location, which is probably the best
+#' publicly available proxy at that level of precision.
+#'
+#' @source INSEE: \url{https://www.data.gouv.fr/datasets/bureaux-de-vote-et-adresses-de-leurs-electeurs}
+"Paris20eAddresses"

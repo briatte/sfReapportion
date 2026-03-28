@@ -14,7 +14,7 @@ The `sfReapportion` function is intended as a drop-in replacement for Joël's `s
 __Very much work in progress:__
 
 - use of `weights` with `mode = "proportion"` has only been lightly tested
-- use of `weight_matrix` and `weight_matrix_var` has not been tested
+- use of `weight_matrix` and `weight_matrix_var` has only been lightly tested
 
 The package was ported in order to be used in [this project](https://github.com/briatte/selection-bv).
 
@@ -103,6 +103,125 @@ areal_equiv <- areal::aw_interpolate(ParisPollingStations2012_sf, tid = ID,
 The package contains further tests against the [`st_interpolate_aw`][st_interpolate_aw] function of the [`sf`][sf] package.
 
 [st_interpolate_aw]: https://r-spatial.github.io/sf/reference/interpolate_aw.html
+
+## Using a weights matrix
+
+The package contains an example weights matrix that contains voter addresses located in the 20th arrondissement of Paris. The weighting variable, `nb_adresses`, only approximately counts voters at a given location (the number of voters at each address is unknown).
+
+The data were obtained by subsetting from the _[Répertoire électoral unique][reu]_ (REU):
+
+```r
+library(arrow)
+library(dplyr)
+
+# subset polling stations
+bv20 <- arrow::read_parquet("table-bv-reu.parquet") %>%
+  dplyr::filter(code_commune %in% c("75120")) %>%
+  dplyr::select(id_brut_reu, libelle_reu, dplyr::starts_with("nb_adresses"))
+
+# get their unique identifiers
+bv20 <- unique(bv20$id_brut_reu)
+
+# subset voter addresses (slow)
+addr20 <- arrow::read_parquet("table-adresses-reu.parquet") %>%
+    dplyr::filter(id_brut_bv_reu %in% bv20)
+
+# convert to spatial points
+pts20 <- dplyr::group_by(addr20, geo_adresse, longitude, latitude) %>%
+  dplyr::summarise(nb_adresses = sum(nb_adresses)) %>%
+  sf::st_as_sf(coords = c("longitude", "latitude")) %>%
+  sf::st_set_crs(4326)
+
+# save to .rda (LazyData: true)
+Paris20eAddresses <- pts20
+save(Paris20eAddresses, file = "Paris20eAddresses.rda", compress = "xz")
+```
+
+[reu]: https://www.data.gouv.fr/datasets/bureaux-de-vote-et-adresses-de-leurs-electeurs
+
+The results can be tested by subsetting the rest of the test data included in the package to the 20th arrondissement of Paris:
+
+```r
+library(dplyr)
+library(ggplot2)
+library(sf)
+library(sfReapportion)
+
+# spatial points of voter addresses in Paris 20th district
+data(Paris20eAddresses)
+
+data(ParisPollingStations2012)
+data(ParisIris)
+data(RP_2011_CS8_Paris)
+
+# subset geometry of polling stations (new geom, 76 polling stations)
+ParisPollingStations2012 <- sf::st_as_sf(ParisPollingStations2012) %>%
+  dplyr::filter(arrondisse %in% c(20)) %>%
+  dplyr::mutate(id_brut_bv_reu = paste("75020_", num_bv))
+
+# subset geometry of census tracts (old geom, 356 polygons)
+# will throw a warning about polygons expected to be spatially constant
+ParisIris <- sf::st_as_sf(ParisIris) %>%
+  sf::st_intersection(ParisPollingStations2012)
+
+# this is what we're reapportioning
+ggplot(ParisIris) +
+  geom_sf() +
+  geom_sf(data = Paris20eAddresses, aes(size = nb_adresses), alpha = 1/4) +
+  scale_size_area(max_size = 10) +
+  theme_void()
+
+# subset census data to reapportion (93 distinct census tracts)
+RP_2011_CS8_Paris <- dplyr::filter(RP_2011_CS8_Paris,
+                                   IRIS %in% ParisIris$DCOMIRIS)
+```
+
+Comparing weighted and unweighted results is probably a good idea:
+
+```r
+# unweighted
+r1 <- sfReapportion(ParisIris, ParisPollingStations2012, RP_2011_CS8_Paris,
+                    "DCOMIRIS", "ID", "IRIS")
+
+# weighted
+# will throw a warning about `weight_matrix` having only been lightly tested
+r2 <- sfReapportion(ParisIris, ParisPollingStations2012,
+                    RP_2011_CS8_Paris,
+                    "DCOMIRIS", "ID", "IRIS",
+                    weight_matrix = Paris20eAddresses,
+                    weight_matrix_var = "nb_adresses")
+```
+
+The differences are non-trivial, at least when looking at adult population and socio-professional categories as we do in this example:
+
+```
+> # unweighted
+> head(r1[, 1:4])
+         ID C11_POP15P C11_POP15P_CS1 C11_POP15P_CS2
+1 750200001   2026.819              0       56.46644
+2 750200002   1465.669              0       34.65999
+3 750200003   2308.119              0       60.81294
+4 750200004   1934.005              0       53.48857
+5 750200005   1886.533              0       45.53472
+6 750200006   1873.657              0       44.32671
+>
+> # weighted
+> head(r2[, 1:4])
+         ID C11_POP15P C11_POP15P_CS1 C11_POP15P_CS2
+1 750200001   2006.434              0       54.75713
+2 750200002   1543.915              0       35.65698
+3 750200003   1930.616              0       51.33953
+4 750200004   2135.882              0       60.72449
+5 750200005   1925.147              0       46.37813
+6 750200006   1953.638              0       47.51444
+>
+> # correlations
+> round(diag(cor(r1[,-1], r2[,-1])), 2)
+    C11_POP15P C11_POP15P_CS1 C11_POP15P_CS2 C11_POP15P_CS3 C11_POP15P_CS4 
+          0.30           0.75           0.58           0.46           0.30 
+C11_POP15P_CS5 C11_POP15P_CS6 C11_POP15P_CS7 C11_POP15P_CS8 
+          0.48           0.70           0.26           0.52
+```
 
 ## See also
 
