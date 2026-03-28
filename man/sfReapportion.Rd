@@ -38,20 +38,21 @@ allowing to match it to the `old_geom`.}
 in the `data` set to reapportion. By default, all data variables except for
 the ID.}
 
-\item{mode}{either `"count"` or `"proportion"`. `"count"` is for absolute
-values, `"proportion"` is for, well, proportions (expressed between 0 and 1).
-If `"proportion"`, you need to provide a `weights` variable.}
+\item{mode}{either \code{"count"} or \code{"proportion"}. \code{"count"} is
+for absolute values, \code{"proportion"} is for, well, proportions (expressed
+between 0 and 1). If \code{"proportion"}, a `weights` variable needs to be
+provided. \strong{Note: \code{"proportion"} has only been lightly tested.}}
 
-\item{weights}{In case the variables are proportions, the name of the
-variable containing weights (i.e. the total number of observations per unit
-in the `old_geom`).}
+\item{weights}{\strong{(optional, lightly tested only)} In case the variables
+are proportions, the name of the variable containing weights (i.e. the total
+number of observations per unit in the `old_geom`).}
 
-\item{weight_matrix}{\strong{(optional, untested)} a `SpatialPointsDataFrame`
-or `sf` object indicating where are the observations (inhabitants, voters,
-etc.).}
+\item{weight_matrix}{\strong{(optional, lightly tested only)} a
+`SpatialPointsDataFrame` or `sf` object indicating the spatial coordinates of
+the observations (inhabitants, voters, etc.).}
 
-\item{weight_matrix_var}{\strong{(optional, untested)} the name of the
-variable in \code{weight_matrix} containing the weights.}
+\item{weight_matrix_var}{\strong{(optional, lightly tested only)} the name of
+the (numeric) variable containing the weights in \code{weight_matrix}.}
 }
 \description{
 This function allows to reapportion data from one geography to another, for
@@ -61,7 +62,7 @@ example in the context of working with different administrative units.
 Inspiration from \url{https://stackoverflow.com/a/17703903} and
 \url{https://rpubs.com/PaulWilliamson/6577}.
 Original \code{sp} version available at \url{https://github.com/joelgombin/spReapportion}.
-All mistakes are mine, obviously.
+All mistakes are mine, obviously. More details appear in the README file.
 }
 \author{
 Joël Gombin (initial \code{sp} version),

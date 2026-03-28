@@ -7,7 +7,7 @@
 #' @note Inspiration from \url{https://stackoverflow.com/a/17703903} and
 #' \url{https://rpubs.com/PaulWilliamson/6577}.
 #' Original \code{sp} version available at \url{https://github.com/joelgombin/spReapportion}.
-#' All mistakes are mine, obviously.
+#' All mistakes are mine, obviously. More details appear in the README file.
 #' @param old_geom a `SpatialPolygonsDataFrame` or `sf` object
 #' representing the initial geometry.
 #' @param new_geom a `SpatialPolygonsDataFrame` or `sf` object
@@ -20,17 +20,18 @@
 #' @param variables a character vector, representing the names of the variables
 #' in the `data` set to reapportion. By default, all data variables except for
 #' the ID.
-#' @param mode either `"count"` or `"proportion"`. `"count"` is for absolute
-#' values, `"proportion"` is for, well, proportions (expressed between 0 and 1).
-#' If `"proportion"`, you need to provide a `weights` variable.
-#' @param weights In case the variables are proportions, the name of the
-#' variable containing weights (i.e. the total number of observations per unit
-#' in the `old_geom`).
-#' @param weight_matrix \strong{(optional, untested)} a `SpatialPointsDataFrame`
-#' or `sf` object indicating where are the observations (inhabitants, voters,
-#' etc.).
-#' @param weight_matrix_var \strong{(optional, untested)} the name of the
-#' variable in \code{weight_matrix} containing the weights.
+#' @param mode either \code{"count"} or \code{"proportion"}. \code{"count"} is
+#' for absolute values, \code{"proportion"} is for, well, proportions (expressed
+#' between 0 and 1). If \code{"proportion"}, a `weights` variable needs to be
+#' provided. \strong{Note: \code{"proportion"} has only been lightly tested.}
+#' @param weights \strong{(optional, lightly tested only)} In case the variables
+#' are proportions, the name of the variable containing weights (i.e. the total
+#' number of observations per unit in the `old_geom`).
+#' @param weight_matrix \strong{(optional, lightly tested only)} a
+#' `SpatialPointsDataFrame` or `sf` object indicating the spatial coordinates of
+#' the observations (inhabitants, voters, etc.).
+#' @param weight_matrix_var \strong{(optional, lightly tested only)} the name of
+#' the (numeric) variable containing the weights in \code{weight_matrix}.
 #' @export
 #' @import sp sf
 #' @importFrom dplyr all_of

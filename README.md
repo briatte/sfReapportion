@@ -11,7 +11,7 @@ A quick port of Joël Gombin's [`spReapportion`](https://github.com/joelgombin/s
 
 The `sfReapportion` function is intended as a drop-in replacement for Joël's `spReapportion` function: it takes exactly the same arguments, and outputs exactly the same kind of results, also as a data frame.
 
-__Very much work in progress:__
+__Use the following options with caution:__
 
 - use of `weights` with `mode = "proportion"` has only been lightly tested
 - use of `weight_matrix` and `weight_matrix_var` has only been lightly tested

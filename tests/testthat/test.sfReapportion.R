@@ -251,12 +251,22 @@ test_that("sfReapportion works with a `weight_matrix`", {
   RP_2011_CS8_Paris <- dplyr::filter(RP_2011_CS8_Paris,
                                      IRIS %in% ParisIris$DCOMIRIS)
 
+  # adding a column to be removed from the `weight_matrix`
+  Paris20eAddresses[, "DCOMIRIS" ] <- "foo"
   testthat::expect_warning(sfReapportion(ParisIris, ParisPollingStations2012,
                                          RP_2011_CS8_Paris,
                                          "DCOMIRIS", "ID", "IRIS",
                                          weight_matrix = Paris20eAddresses,
                                          weight_matrix_var = "nb_adresses"),
                            "lightly tested")
+
+  # try passing a bogus weights matrix
+  testthat::expect_error(sfReapportion(ParisIris, ParisPollingStations2012,
+                                       RP_2011_CS8_Paris,
+                                       "DCOMIRIS", "ID", "IRIS",
+                                       weight_matrix = matrix(1),
+                                       weight_matrix_var = "nb_adresses"),
+                         "SpatialPointsDataFrame")
 })
 
 test_that("NA values are handled correctly", {
