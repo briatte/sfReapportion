@@ -54,6 +54,10 @@ the observations (inhabitants, voters, etc.).}
 \item{weight_matrix_var}{\strong{(optional, lightly tested only)} the name of
 the (numeric) variable containing the weights in \code{weight_matrix}.}
 }
+\value{
+a `data.frame` containing \code{new_ID} and the reapportioned
+\code{variables} from \code{data}
+}
 \description{
 This function allows to reapportion data from one geography to another, for
 example in the context of working with different administrative units.

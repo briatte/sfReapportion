@@ -11,6 +11,10 @@ sfAggregate(sp, id)
 
 \item{id}{a grouping vector, as required by \code{\link[sf]{aggregate}}}
 }
+\value{
+a \code{\link[sp]{SpatialPolygonsDataFrame}} object with unique and
+valid feature IDs
+}
 \description{
 A replacement for \code{rgeos::unaryUnion}.
 }

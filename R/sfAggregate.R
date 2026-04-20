@@ -5,6 +5,8 @@
 #' @note Source: \url{https://github.com/r-spatial/sf/issues/2563}
 #' @param sp an \code{\link[sp]{SpatialPolygonsDataFrame}} object
 #' @param id a grouping vector, as required by \code{\link[sf]{aggregate}}
+#' @returns a \code{\link[sp]{SpatialPolygonsDataFrame}} object with unique and
+#' valid feature IDs
 #' @export
 #' @import sf sp
 #' @importFrom dplyr select

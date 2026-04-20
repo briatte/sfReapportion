@@ -32,6 +32,8 @@
 #' the observations (inhabitants, voters, etc.).
 #' @param weight_matrix_var \strong{(optional, lightly tested only)} the name of
 #' the (numeric) variable containing the weights in \code{weight_matrix}.
+#' @returns a `data.frame` containing \code{new_ID} and the reapportioned
+#' \code{variables} from \code{data}
 #' @export
 #' @import sp sf
 #' @importFrom dplyr all_of
