@@ -1,5 +1,9 @@
 <!-- badges: start -->
-[![Codecov test coverage](https://codecov.io/gh/briatte/sfReapportion/graph/badge.svg)](https://app.codecov.io/gh/briatte/sfReapportion) [![](https://cranlogs.r-pkg.org/badges/sfReapportion)](https://cran.r-project.org/package=sfReapportion)
+[![Codecov test coverage](https://codecov.io/gh/briatte/sfReapportion/graph/badge.svg)](https://app.codecov.io/gh/briatte/sfReapportion)
+[![CRAN checks
+(worst)](https://badges.cranchecks.info/worst/sfReapportion.svg)](https://cran.r-project.org/web/checks/check_results_sfReapportion.html)
+[![CRAN total
+downloads](https://cranlogs.r-pkg.org/badges/grand-total/sfReapportion)](https://cran.r-project.org/package=sfReapportion)
 <!-- badges: end -->
 
 A quick port of Joël Gombin's [`spReapportion`](https://github.com/joelgombin/spReapportion) package, without the dependencies to the [`maptools`][maptools] and [`rgeos`][rgeos] packages, which were [both retired][retired] in 2023, and with additional support for [`sf`][sf] objects.
@@ -20,7 +24,11 @@ The package was ported in order to be used in [this project](https://github.com/
 
 ## Installation
 
-If the package is not available from CRAN, install from GitHub instead:
+```r
+install.packages("sfReapportion")
+```
+
+For the development version, install from GitHub instead:
 
 ```r
 install.packages("remotes")
