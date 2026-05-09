@@ -1,5 +1,5 @@
 <!-- badges: start -->
-[![Codecov test coverage](https://codecov.io/gh/briatte/sfReapportion/graph/badge.svg)](https://app.codecov.io/gh/briatte/sfReapportion)
+[![Codecov test coverage](https://codecov.io/gh/briatte/sfReapportion/graph/badge.svg)](https://app.codecov.io/gh/briatte/sfReapportion) [![](https://cranlogs.r-pkg.org/badges/sfReapportion)](https://cran.r-project.org/package=sfReapportion)
 <!-- badges: end -->
 
 A quick port of Joël Gombin's [`spReapportion`](https://github.com/joelgombin/spReapportion) package, without the dependencies to the [`maptools`][maptools] and [`rgeos`][rgeos] packages, which were [both retired][retired] in 2023, and with additional support for [`sf`][sf] objects.
