@@ -1,3 +1,7 @@
+# version 0.2.1 (2026-05-26)
+
+- `weight_matrix` tested against `spReapportion` (#7)
+
 # version 0.2.0 (2026-03-28)
 
 - full code coverage

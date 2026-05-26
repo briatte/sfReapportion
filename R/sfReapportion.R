@@ -23,15 +23,15 @@
 #' @param mode either \code{"count"} or \code{"proportion"}. \code{"count"} is
 #' for absolute values, \code{"proportion"} is for, well, proportions (expressed
 #' between 0 and 1). If \code{"proportion"}, a `weights` variable needs to be
-#' provided. \strong{Note: \code{"proportion"} has only been lightly tested.}
-#' @param weights \strong{(optional, lightly tested only)} In case the variables
-#' are proportions, the name of the variable containing weights (i.e. the total
-#' number of observations per unit in the `old_geom`).
-#' @param weight_matrix \strong{(optional, lightly tested only)} a
-#' `SpatialPointsDataFrame` or `sf` object indicating the spatial coordinates of
-#' the observations (inhabitants, voters, etc.).
-#' @param weight_matrix_var \strong{(optional, lightly tested only)} the name of
-#' the (numeric) variable containing the weights in \code{weight_matrix}.
+#' provided.
+#' @param weights \strong{(optional)} In case the variables are proportions,
+#' the name of the variable containing weights (i.e. the total number of
+#' observations per unit in the `old_geom`).
+#' @param weight_matrix \strong{(optional)} a `SpatialPointsDataFrame` or `sf`
+#' object indicating the spatial coordinates of the observations (inhabitants,
+#' voters, etc.).
+#' @param weight_matrix_var \strong{(optional)} the name of the (numeric)
+#' variable containing the weights in \code{weight_matrix}.
 #' @returns a `data.frame` containing \code{new_ID} and the reapportioned
 #' \code{variables} from \code{data}
 #' @export
@@ -59,9 +59,6 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
 
   # convert sf objects to Spatial format ------------------------------------
 
-  ###
-  ### untested, but should work, right?
-  ###
   if (inherits(old_geom, "sf")) {
     # if (is.na(sf::st_crs(old_geom)))
     #   warning("Missing CRS found in ", old_geom_name,
@@ -208,11 +205,6 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
 
   # use weight matrix if provided
   if (!is.null(weight_matrix)) {
-    ###
-    ### warn about lack of testing
-    ###
-    warning("Use of `weight_matrix` only lightly tested (sorry), use carefully")
-
     if (old_ID %in% names(weight_matrix@data)) {
       weight_matrix@data <- weight_matrix@data[, -match(old_ID, names(weight_matrix@data)) ]
     }
@@ -295,11 +287,6 @@ sfReapportion <- function(old_geom, new_geom, data, old_ID, new_ID, data_ID,
   # object
 
   if (!is.null(weight_matrix)) {
-    ###
-    ### warn about lack of testing (already done earlier)
-    ###
-    # warning("use of weight matrix not yet tested")
-
     # check in which intersected polygon each point stands
     weight_matrix_int <- sf::as_Spatial(sf::st_geometry(int))
     weight_matrix_int <- sp::over(weight_matrix, weight_matrix_int)

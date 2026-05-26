@@ -192,7 +192,6 @@ r1 <- sfReapportion(ParisIris, ParisPollingStations2012, RP_2011_CS8_Paris,
                     "DCOMIRIS", "ID", "IRIS")
 
 # weighted
-# will throw a warning about `weight_matrix` having only been lightly tested
 r2 <- sfReapportion(ParisIris, ParisPollingStations2012,
                     RP_2011_CS8_Paris,
                     "DCOMIRIS", "ID", "IRIS",
