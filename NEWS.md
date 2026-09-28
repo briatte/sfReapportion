@@ -1,3 +1,7 @@
+# version 0.2.2 (2026-09-28)
+
+- skipping problematic CRAN test (repairing invalid geoms)
+
 # version 0.2.1 (2026-05-26)
 
 - `weight_matrix` tested against `spReapportion` (#7)

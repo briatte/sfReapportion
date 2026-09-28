@@ -41,18 +41,18 @@ the ID.}
 \item{mode}{either \code{"count"} or \code{"proportion"}. \code{"count"} is
 for absolute values, \code{"proportion"} is for, well, proportions (expressed
 between 0 and 1). If \code{"proportion"}, a `weights` variable needs to be
-provided. \strong{Note: \code{"proportion"} has only been lightly tested.}}
+provided.}
 
-\item{weights}{\strong{(optional, lightly tested only)} In case the variables
-are proportions, the name of the variable containing weights (i.e. the total
-number of observations per unit in the `old_geom`).}
+\item{weights}{\strong{(optional)} In case the variables are proportions,
+the name of the variable containing weights (i.e. the total number of
+observations per unit in the `old_geom`).}
 
-\item{weight_matrix}{\strong{(optional, lightly tested only)} a
-`SpatialPointsDataFrame` or `sf` object indicating the spatial coordinates of
-the observations (inhabitants, voters, etc.).}
+\item{weight_matrix}{\strong{(optional)} a `SpatialPointsDataFrame` or `sf`
+object indicating the spatial coordinates of the observations (inhabitants,
+voters, etc.).}
 
-\item{weight_matrix_var}{\strong{(optional, lightly tested only)} the name of
-the (numeric) variable containing the weights in \code{weight_matrix}.}
+\item{weight_matrix_var}{\strong{(optional)} the name of the (numeric)
+variable containing the weights in \code{weight_matrix}.}
 }
 \value{
 a `data.frame` containing \code{new_ID} and the reapportioned
